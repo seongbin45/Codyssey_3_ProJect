@@ -1,7 +1,8 @@
 # 노코드 자동화 기초 — 프로젝트 1: 지출 메모 자동 분류 파이프라인
 
 > Codyssey "AI 도구 학습" 커리큘럼 — 노코드 자동화 기초: 워크플로우 설계 미션  
-> 프로젝트1: 동일 워크플로우를 **도구 A(Make.com) + 도구 B(n8n)** 로 구현·비교. 비교 분석 보고서·프로젝트2는 별도.
+> 프로젝트1: 동일 워크플로우를 **도구 A(Make.com) + 도구 B(n8n)** 로 구현·비교. 비교 분석 보고서·프로젝트2는 별도.  
+> **작업 규칙:** 이 저장소에서 수정이 생기면 **GitHub(`origin/main`)에 먼저 커밋·푸시**한다.
 
 ---
 
@@ -138,7 +139,9 @@
 - [x] Credentials: Trigger OAuth2 + Sheets OAuth2 + OpenAI 연결
 - [x] Append 패치 반영 + 결과 검증 (`Downloads/결과`) — 고액·일반 7/23 행 확인, 검토는 7/21 음수 행으로 분기 입증
 - [x] 비교 분석 보고서 초안 — `Codyssey_3_ProJect/report/프로젝트1_자동화_도구_비교_분석_보고서.md` (GIF 자리 `report/gifs/`)
-- [ ] `report/gifs/` 에 실동작 GIF 01–08 채우기 + 제출용 마스킹 캡처
+- [x] Make 동작 GIF 6개 (`.gif/` → `report/gifs/make_*.gif` 연결)
+- [x] n8n 설치·OAuth 마찰 이미지 (로그 기반) — `report/gifs/n8n_setup_or_oauth.*` + friction 01–06
+- [ ] **n8n 실행 GIF만** 촬영: `n8n_workflow_overview` / `n8n_run_high` / `n8n_run_normal` / `n8n_run_review`
 - [ ] 테스트 3종 + 분기별 1회 이상 캡처 + 워크플로우 JSON Export
 
 ### 공통
