@@ -1,0 +1,662 @@
+{
+  "name": "지출 메모 자동 분류 (n8n)",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## Append 안정화 패치\n1. Sheets: documentId **id 모드**, **useAppend=true**, 헤더 1행 고정\n2. 컬럼: 타임스탬프~특이사항 6열 문자열 매핑\n3. Code: **아이템마다** 파싱 (first() 버그 제거)\n4. OpenAI: **json_object** 복구\n\nImport 후 Append 3노드 credential = Google Sheets account 확인\n테스트: n8n검증-고액 150000 / 일반 3500 / 미분류 -1000",
+        "height": 320,
+        "width": 380,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1152,
+        -320
+      ],
+      "id": "f56d6d4a-80fa-45fe-a22a-24665bc2fce0",
+      "name": "Setup notes"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "gpt-4.1"
+        },
+        "responses": {
+          "values": [
+            {
+              "role": "system",
+              "content": "당신은 지출 내역 분석 비서입니다. 사용자의 메모를 분석하여 반드시 아래 JSON 구조로만 응답하세요. 마크다운 기호(```)를 절대 포함하지 말고 순수 JSON 문자열만 출력하세요.\n\n{\n  \"category\": \"식비, 교통비, 문화생활, 생필품, 기타, 분류불가 중 택1\",\n  \"amount\": \"지출 금액을 0 이상의 정수로만 기재\",\n  \"summary\": \"지출 내역을 10자 이내로 요약\",\n  \"Classification\": \"분류 가능 여/부 표시\"\n}\n\n분류 규칙:\n1. 메모에서 금액을 명확히 추출할 수 있고 그 값이 0보다 크면, amount에 해당 숫자를 그대로 기재하고 category는 내용에 맞게 분류하세요.\n2. 실제로 비용이 들지 않은 정당한 지출(예: \"무료 쿠폰으로 커피 받음\", \"친구가 밥 사줌\")은 amount를 0으로 기재하되, category는 \"분류불가\"가 아니라 내용에 맞는 정상 카테고리로 분류하세요.\n3. 아래에 해당하는 경우에만 Classification를 \"분류불가\"로, amount는 0으로 기재하세요.\n   - 금액이 음수로 표현된 경우 (예: \"-1000\", \"마이너스 5000원\")\n   - 금액을 특정할 수 없거나 메모에 금액 자체가 없는 경우\n   - 지출 내용과 금액의 연결이 불명확해 파싱을 신뢰할 수 없는 경우"
+            },
+            {
+              "content": "={{ $json['지출 메모'] ?? $json['Expense memo'] ?? Object.values($json)[1] }}",
+              "role": "user",
+              "type": "text"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {
+          "maxTokens": 2048,
+          "textFormat": {
+            "textOptions": [
+              {
+                "type": "json_object",
+                "verbosity": "medium"
+              }
+            ]
+          },
+          "temperature": 1
+        },
+        "simplify": true
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2.3,
+      "position": [
+        -384,
+        128
+      ],
+      "id": "00a2cf22-1c6f-47c3-8428-51c3f5a730ca",
+      "name": "OpenAI 파싱",
+      "credentials": {
+        "openAiApi": {
+          "id": "NdURDYGp8WsvhqUH",
+          "name": "OpenAI account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "language": "javaScript",
+        "jsCode": "// 각 아이템마다 실행 (runOnceForEachItem)\n// OpenAI 응답 + Trigger 원본 → Switch/Append용 필드\nconst openai = $json;\nconst triggerItem = $('Google Sheets Trigger1').item;\nconst trigger = triggerItem?.json ?? {};\n\nfunction pick(obj, keys) {\n  if (!obj || typeof obj !== 'object') return undefined;\n  for (const k of keys) {\n    if (obj[k] !== undefined && obj[k] !== null && String(obj[k]).trim() !== '') {\n      return obj[k];\n    }\n  }\n  return undefined;\n}\n\nfunction extractParsed(data) {\n  if (Array.isArray(data.output)) {\n    for (const item of data.output) {\n      if (item?.type === 'message' && Array.isArray(item.content)) {\n        for (const c of item.content) {\n          if (c?.type === 'output_text') {\n            if (typeof c.text === 'string') {\n              try { return JSON.parse(c.text); } catch (e) { /* continue */ }\n            }\n            if (c.text && typeof c.text === 'object') return c.text;\n          }\n        }\n      }\n    }\n  }\n  const raw = data.message?.content ?? data.text ?? data.content;\n  if (typeof raw === 'string') {\n    try { return JSON.parse(raw.trim()); } catch (e) { /* continue */ }\n  }\n  if (data.category !== undefined || data.amount !== undefined) return data;\n  if (raw && typeof raw === 'object') return raw;\n  throw new Error('OpenAI JSON parse failed: ' + JSON.stringify(data).slice(0, 300));\n}\n\nconst parsed = extractParsed(openai);\nconst timestamp = pick(trigger, ['Timestamp', '타임스탬프', 'timestamp'])\n  ?? pick(openai, ['Timestamp', '타임스탬프'])\n  ?? new Date().toISOString();\nconst memo = pick(trigger, ['지출 메모', 'Expense memo', 'memo'])\n  ?? pick(openai, ['지출 메모', 'memo'])\n  ?? '';\nconst amountNum = Number(String(parsed.amount ?? '').replace(/,/g, '').trim());\nconst amount = Number.isFinite(amountNum) ? amountNum : 0;\nconst category = parsed.category ?? '';\nconst summary = parsed.summary ?? '';\nconst Classification = String(parsed.Classification ?? '').trim();\n\nreturn {\n  json: {\n    timestamp,\n    memo,\n    category,\n    amount,\n    summary,\n    Classification,\n    '타임스탬프': timestamp,\n    '원본 메모': memo,\n    '카테고리': category,\n    '금액': amount,\n    '요약': summary,\n    '특이사항': Classification,\n  },\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -96,
+        128
+      ],
+      "id": "856c1d03-f27e-4501-98ba-ac57067834d3",
+      "name": "JSON 정규화"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "afea79e9-6329-4066-9ed1-ea87fadef6be",
+                    "leftValue": "={{ $json.amount }}",
+                    "rightValue": 50000,
+                    "operator": {
+                      "type": "number",
+                      "operation": "gte"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "고액지출"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "562907c6-40ee-4309-9ce3-47a84703bf0d",
+                    "leftValue": "={{ $json.amount }}",
+                    "rightValue": 50000,
+                    "operator": {
+                      "type": "number",
+                      "operation": "lt"
+                    }
+                  },
+                  {
+                    "id": "a25fa482-bdfa-4fa4-aa63-7d777766f604",
+                    "leftValue": "={{ $json.Classification }}",
+                    "rightValue": "분류불가",
+                    "operator": {
+                      "type": "string",
+                      "operation": "notEquals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "일반지출"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "94923702-8e30-4b38-841d-14d442d9c4c3",
+                    "leftValue": "={{ $json.amount }}",
+                    "rightValue": 0,
+                    "operator": {
+                      "type": "number",
+                      "operation": "equals"
+                    }
+                  },
+                  {
+                    "id": "dacc1d3e-f558-497b-a0fa-26616e2bffa6",
+                    "leftValue": "={{ $json.Classification }}",
+                    "rightValue": "분류불가",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "미분류"
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra"
+        }
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.3,
+      "position": [
+        176,
+        128
+      ],
+      "id": "c4d41d13-02b3-4469-82b8-0da419348d7d",
+      "name": "Router 3분기"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1wz8bcpjNRIwq8o-skC49M2orEjfBNRpW2eETmjvwmrg",
+          "mode": "id",
+          "cachedResultName": "지출 자동 분류 결과",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1wz8bcpjNRIwq8o-skC49M2orEjfBNRpW2eETmjvwmrg/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "고액 지출 분류 결과",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "타임스탬프": "={{ String($json.timestamp ?? $json['타임스탬프'] ?? '') }}",
+            "원본 메모": "={{ String($json.memo ?? $json['원본 메모'] ?? '') }}",
+            "카테고리": "={{ String($json.category ?? $json['카테고리'] ?? '') }}",
+            "금액": "={{ String($json.amount ?? $json['금액'] ?? '') }}",
+            "요약": "={{ String($json.summary ?? $json['요약'] ?? '') }}",
+            "특이사항": "={{ String($json.Classification ?? $json['특이사항'] ?? '') }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "타임스탬프",
+              "displayName": "타임스탬프",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "원본 메모",
+              "displayName": "원본 메모",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "카테고리",
+              "displayName": "카테고리",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "금액",
+              "displayName": "금액",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "요약",
+              "displayName": "요약",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "특이사항",
+              "displayName": "특이사항",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {
+          "cellFormat": "USER_ENTERED",
+          "useAppend": true,
+          "locationDefine": {
+            "values": {
+              "headerRow": 1
+            }
+          }
+        },
+        "resource": "sheet"
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        464,
+        -64
+      ],
+      "id": "3aaf3e18-8f5d-45d9-a78c-73d1712543a7",
+      "name": "고액 지출 기록",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "N8vT254OBZ73sjum",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1wz8bcpjNRIwq8o-skC49M2orEjfBNRpW2eETmjvwmrg",
+          "mode": "id",
+          "cachedResultName": "지출 자동 분류 결과",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1wz8bcpjNRIwq8o-skC49M2orEjfBNRpW2eETmjvwmrg/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "일반 지출 분류 결과",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "타임스탬프": "={{ String($json.timestamp ?? $json['타임스탬프'] ?? '') }}",
+            "원본 메모": "={{ String($json.memo ?? $json['원본 메모'] ?? '') }}",
+            "카테고리": "={{ String($json.category ?? $json['카테고리'] ?? '') }}",
+            "금액": "={{ String($json.amount ?? $json['금액'] ?? '') }}",
+            "요약": "={{ String($json.summary ?? $json['요약'] ?? '') }}",
+            "특이사항": "={{ String($json.Classification ?? $json['특이사항'] ?? '') }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "타임스탬프",
+              "displayName": "타임스탬프",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "원본 메모",
+              "displayName": "원본 메모",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "카테고리",
+              "displayName": "카테고리",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "금액",
+              "displayName": "금액",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "요약",
+              "displayName": "요약",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "특이사항",
+              "displayName": "특이사항",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {
+          "cellFormat": "USER_ENTERED",
+          "useAppend": true,
+          "locationDefine": {
+            "values": {
+              "headerRow": 1
+            }
+          }
+        },
+        "resource": "sheet"
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        464,
+        128
+      ],
+      "id": "0dd8d976-2867-44e1-8a89-7f571c3767d1",
+      "name": "일반 지출 기록",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "N8vT254OBZ73sjum",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1wz8bcpjNRIwq8o-skC49M2orEjfBNRpW2eETmjvwmrg",
+          "mode": "id",
+          "cachedResultName": "지출 자동 분류 결과",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1wz8bcpjNRIwq8o-skC49M2orEjfBNRpW2eETmjvwmrg/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "검토 필요",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "타임스탬프": "={{ String($json.timestamp ?? $json['타임스탬프'] ?? '') }}",
+            "원본 메모": "={{ String($json.memo ?? $json['원본 메모'] ?? '') }}",
+            "카테고리": "={{ String($json.category ?? $json['카테고리'] ?? '') }}",
+            "금액": "={{ String($json.amount ?? $json['금액'] ?? '') }}",
+            "요약": "={{ String($json.summary ?? $json['요약'] ?? '') }}",
+            "특이사항": "={{ String($json.Classification ?? $json['특이사항'] ?? '') }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "타임스탬프",
+              "displayName": "타임스탬프",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "원본 메모",
+              "displayName": "원본 메모",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "카테고리",
+              "displayName": "카테고리",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "금액",
+              "displayName": "금액",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "요약",
+              "displayName": "요약",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "특이사항",
+              "displayName": "특이사항",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {
+          "cellFormat": "USER_ENTERED",
+          "useAppend": true,
+          "locationDefine": {
+            "values": {
+              "headerRow": 1
+            }
+          }
+        },
+        "resource": "sheet"
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        464,
+        304
+      ],
+      "id": "eb9fb301-d892-435c-8a02-78651f4712a1",
+      "name": "검토 필요 기록",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "N8vT254OBZ73sjum",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "documentId": {
+          "__rl": true,
+          "value": "1aZZXJaWqMkydaAICT42N2GKtZiAMbPk6PYCHg3PtUQ4",
+          "mode": "id",
+          "cachedResultName": "지출 메모 입력 폼 (응답)",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1aZZXJaWqMkydaAICT42N2GKtZiAMbPk6PYCHg3PtUQ4/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1976484975,
+          "mode": "list",
+          "cachedResultName": "Form Responses 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1aZZXJaWqMkydaAICT42N2GKtZiAMbPk6PYCHg3PtUQ4/edit#gid=1976484975"
+        },
+        "event": "rowAdded",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTrigger",
+      "typeVersion": 1,
+      "position": [
+        -656,
+        128
+      ],
+      "id": "5706223f-77e9-4576-ac43-93f62be1501a",
+      "name": "Google Sheets Trigger1",
+      "credentials": {
+        "googleSheetsTriggerOAuth2Api": {
+          "id": "cfnGyrJpbIQqNpAO",
+          "name": "Google Sheets Trigger account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "OpenAI 파싱": {
+      "main": [
+        [
+          {
+            "node": "JSON 정규화",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "JSON 정규화": {
+      "main": [
+        [
+          {
+            "node": "Router 3분기",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Router 3분기": {
+      "main": [
+        [
+          {
+            "node": "고액 지출 기록",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "일반 지출 기록",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "검토 필요 기록",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets Trigger1": {
+      "main": [
+        [
+          {
+            "node": "OpenAI 파싱",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "e2cbe02d-8dac-4dc5-abc2-efb829b5aeb7",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "992248aea2934574552108c3309f14b259aab3915df23f1fd1750968247afad5"
+  },
+  "nodeGroups": [],
+  "id": "v7swu5iLt6oYJM5r",
+  "tags": []
+}

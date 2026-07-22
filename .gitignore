@@ -1,2 +1,24 @@
+# Local AI / tool dumps
 gemini/
-gemini/
+
+# n8n local install (node_modules, large)
+n8n-runtime/
+n8n-local/
+**/node_modules/
+
+# Secrets & keys
+*.pem
+*credentials*.json
+client_secret*.json
+**/codyssey-no-code-automation*.json
+**/*service-account*.json
+.env
+.env.*
+
+# OS / editor
+.DS_Store
+Thumbs.db
+*.log
+
+# Optional local scratch
+Codyssey_3_ProJect/_review_results.mjs

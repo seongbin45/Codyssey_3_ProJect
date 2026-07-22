@@ -1,7 +1,7 @@
-# 노코드 자동화 기초 — 프로젝트 1: 지출 메모 자동 분류 파이프라인 (도구 A: Make.com)
+# 노코드 자동화 기초 — 프로젝트 1: 지출 메모 자동 분류 파이프라인
 
-> Codyssey "AI 도구 학습" 커리큘럼 — 노코드 자동화 기초: 워크플로우 설계 미션
-> 이 문서는 **도구 A(Make.com) 구현분**의 진행 상태를 정리한 것이며, 프로젝트1 완결(도구 B 포함), 비교 분석 보고서, 프로젝트2는 별도로 진행해야 함.
+> Codyssey "AI 도구 학습" 커리큘럼 — 노코드 자동화 기초: 워크플로우 설계 미션  
+> 프로젝트1: 동일 워크플로우를 **도구 A(Make.com) + 도구 B(n8n)** 로 구현·비교. 비교 분석 보고서·프로젝트2는 별도.
 
 ---
 
@@ -11,44 +11,64 @@
 |---|---|
 | 소속 프로젝트 | **프로젝트 1** (동일 워크플로우를 2개 이상 도구로 구현·비교) — 프로젝트 2(자유 주제)와는 별개 |
 | 주제 | 지능형 지출 관리 및 고액 지출 분류 파이프라인 |
-| 도구 A | Make.com (본 문서 대상) |
-| 도구 B | Zapier (예정, **미착수**) |
+| 도구 A | Make.com (아래 2~6절 — 구현 진행 중) |
+| 도구 B | **n8n (Self-hosted)** — **최종 워크플로우 확정** → `n8n_지출_메모_자동_분류.workflow.json` (원본: Downloads `지출 메모 자동 분류 (n8n).json`) |
+
+### 도구 B 결정 (Zapier → n8n)
+
+| 후보 | 판단 |
+|---|---|
+| Zapier Free | Zap당 트리거 1 + 액션 1(2단계). Paths/멀티스텝 분기 불가 → **본 구조(최소 4단계+3분기) 재현 불가** |
+| Zapier 유료/체험 | 가능하나 결제·체험 의존. 미션은 무료 조합 우선 |
+| **n8n 셀프호스트 (채택)** | IF/Switch·멀티스텝 완전 무료. “자가호스팅 가능한 도구” 권장 예시와 일치 |
+
+**구현 전 전제 (중요)**
+
+1. **설치 마찰**: 무료의 대가로 Docker 또는 Node로 로컬 기동이 필요. “무료 = 즉시 사용”이 아님 → 설치 시간을 일정에 넣는다. 비교 보고서 「설정 난이도」 소재.
+2. **트리거 노드명**: n8n에 Google Forms 전용 트리거 없음. Make의 “Forms Watch Rows”와 같이 **응답 스프레드시트 폴링(Google Sheets Trigger)** 으로 동일 구조 재현. 캡처·보고서에는 노드명이 Sheets로 표시됨을 명시.
 
 ---
 
 ## 2. 워크플로우 구조
 
 ```
-[Trigger] Google Forms – Watch Rows (지출 메모 응답 감지)
+[Trigger] 응답 시트 폴링 (Make: Forms Watch Rows 표기 / n8n: Google Sheets Trigger)
       │
       ▼
-[Action 1] OpenAI (gpt-4.1, Chat Completion, JSON 모드)
-      │  메모 텍스트 → { category, amount, summary } 추출
+[Action 1] OpenAI (Chat Completion, JSON 모드)
+      │  메모 텍스트 → { category, amount, summary, Classification } 추출
       ▼
-[Router] 3-Way 조건 분기
-      ├─ 분기 A: 고액 지출 (amount ≥ 50000)        → Sheets 탭 "고액 지출 분류 결과"
-      ├─ 분기 B: 일반 지출 (0 < amount < 50000)      → Sheets 탭 "일반 지출 분류 결과"
-      └─ 분기 C: 미분류/예외 (amount = 0 등)         → Sheets 탭 "검토 필요"
+[Router / Switch] 3-Way 조건 분기
+      ├─ 분기 A: 고액 지출 (amount ≥ 50000)                         → Sheets 탭 "고액 지출 분류 결과"
+      ├─ 분기 B: 일반 지출 (amount < 50000 AND Classification ≠ 분류불가) → Sheets 탭 "일반 지출 분류 결과"
+      └─ 분기 C: 미분류/예외 (amount = 0 AND Classification = 분류불가)  → Sheets 탭 "검토 필요"
 ```
 
-- Trigger 1개 (Google Forms) ✅
-- Action 2개 이상 (OpenAI 파싱 + Google Sheets 기록) ✅
-- 조건 분기 1개 이상 (3-Way Router) ✅
-- 보너스1 (AI 연동 Action) — OpenAI 파싱 모듈로 충족 ✅
-- 보너스2 (실패 알림/재시도) — **미구현** (아래 "미해결 이슈" 참고)
+**도구 A (Make)**  
+- Trigger 1개 (응답 시트 폴링) ✅  
+- Action 2개 이상 (OpenAI 파싱 + Google Sheets 기록) ✅  
+- 조건 분기 1개 이상 (3-Way Router) ✅  
+- 보너스1 (AI 연동 Action) ✅  
+- 보너스2 (실패 알림/재시도) — **미구현**
+
+**도구 B (n8n)** — 동일 구조 목표, 구현 전  
+- Trigger: Google Sheets (응답 시트 새 행)  
+- 분기: Switch (또는 IF) 3-way  
+- 설치: 로컬 `npx n8n` (Docker 미설치, Node v25 확인됨)
 
 ---
 
 ## 3. 사용 리소스 (계정 정보는 마스킹 처리할 것)
 
-| 리소스 | 설명 |
-|---|---|
-| 구글 폼 | "지출 메모 입력 폼" — 장문형 질문 1개 |
-| 응답 스프레드시트 | 폼 제출 데이터가 자동으로 쌓이는 시트 |
-| 결과 스프레드시트 | "지출 자동 분류 결과" — 탭 3개(고액/일반/검토 필요), 각 탭 헤더 6열: 타임스탬프·원본 메모·카테고리·금액·요약·특이사항 |
-| Google 계정 | `cho***45@gmail.com` (마스킹 처리됨 — 스크린샷 제출 시에도 동일하게 가릴 것) |
+| 리소스 | 설명 | 스프레드시트/폼 ID (제출 캡처 시 가림) |
+|---|---|---|
+| 구글 폼 | "지출 메모 입력 폼" — 장문형 질문 **「지출 메모」** 1개 | 폼 ID: `1j2SzYUWOGPSxLRA6hrQtthPQBuKoE95suSw2rtGqUnI` |
+| 응답 스프레드시트 | 폼 제출이 쌓이는 시트 — **n8n/Make Trigger 대상** | `1aZZXJaWqMkydaAICT42N2GKtZiAMbPk6PYCHg3PtUQ4` |
+| 결과 스프레드시트 | "지출 자동 분류 결과" — 분기별 Append 대상 | `1wz8bcpjNRIwq8o-skC49M2orEjfBNRpW2eETmjvwmrg` |
+| Google 계정 | `cho***45@gmail.com` | 스크린샷에서도 가릴 것 |
 
-폼/시트는 `create_google_form.js` (Google Apps Script)로 생성함 — 실행 시 로그에 폼 편집 URL, 응답 시트 URL, 결과 시트 URL이 출력됨. **제출용 스크린샷에는 이 URL들이 그대로 노출되지 않도록 캡처 전 가림 처리할 것.**
+- 스크립트 최초 생성 시 결과 시트 탭은 **「분류 결과」1개**였을 수 있음. Make 구현 기준 README 구조는 탭 3개(**고액 지출 분류 결과 / 일반 지출 분류 결과 / 검토 필요**), 헤더 6열: 타임스탬프·원본 메모·카테고리·금액·요약·특이사항. n8n 조립 전 결과 시트에 이 3탭이 있는지 확인하고, 없으면 동일 헤더로 추가할 것.
+- 폼/시트는 `create_google_form.js` (Google Apps Script)로 생성. **제출용 스크린샷·공유 문서에 URL 전체·시트 ID 노출 금지.**
 
 ---
 
@@ -103,15 +123,36 @@
 - [x] Router 필터 최종본 Make에 반영 (5번 표 참고)
 - [x] 시스템 프롬프트 교체·재배포 (4번 참고)
 - [x] 고아 모듈 삭제, 시나리오 이름 정리 (Sora/Whisper 미사용 표기 제거)
+### 도구 A (Make)
 - [ ] 테스트 3종(고액/일반/미분류-예외 + 무료지출 0원 케이스) 재실행 → 3개 분기 각각 최소 1회 실행 확인 및 캡처
 - [ ] 워크플로우 구성 화면 스크린샷 캡처 (계정 이메일·시트 ID 가림 처리) — 캔버스의 OpenAI 모듈 표시명("ChatGPT, Sora, Whisper")은 Make 앱 자체 이름이라 그대로 둬도 무방
-- [ ] **도구 B(Zapier) 로 동일 워크플로우 구현 및 실행** — 프로젝트1 필수 요건, 현재 미착수
-- [ ] 프로젝트1 비교 분석 보고서 작성 (도구명·구현 요약·비교 항목 5개 이상·장단점·적합 상황)
+
+### 도구 B (n8n)
+- [x] Zapier 대신 n8n 채택 결정 + 전제(설치 마찰, Sheets 트리거) 문서화
+- [x] 로컬 환경 확인 (Node ✅ / Docker ❌)
+- [x] Windows SDK 10.0.26100 설치 (winget) + node-gyp 11로 네이티브 모듈 재빌드
+- [x] n8n@2.31.5 로컬 기동 확인 (`n8n-runtime/`, http://localhost:5678)
+- [x] owner 계정 가입 완료
+- [x] Google Sheets Trigger OAuth2 Account connected
+- [x] 최종 워크플로우 JSON 확정 — `지출 메모 자동 분류 (n8n).json` → 프로젝트 `n8n_지출_메모_자동_분류.workflow.json`
+- [x] Credentials: Trigger OAuth2 + Sheets OAuth2 + OpenAI 연결
+- [x] Append 패치 반영 + 결과 검증 (`Downloads/결과`) — 고액·일반 7/23 행 확인, 검토는 7/21 음수 행으로 분기 입증
+- [x] 비교 분석 보고서 초안 — `Codyssey_3_ProJect/report/프로젝트1_자동화_도구_비교_분석_보고서.md` (GIF 자리 `report/gifs/`)
+- [ ] `report/gifs/` 에 실동작 GIF 01–08 채우기 + 제출용 마스킹 캡처
+- [ ] 테스트 3종 + 분기별 1회 이상 캡처 + 워크플로우 JSON Export
+
+### 공통
+- [ ] 프로젝트1 비교 분석 보고서 작성 (도구명·구현 요약·비교 항목 5개 이상·장단점·적합 상황 — Zapier 미채택 사유도 포함)
 - [ ] **프로젝트2(자유 주제) 반복 업무 정의 및 구현** — 현재 완전히 미착수, 프로젝트1과 별개로 새로 시작해야 함
 
 ---
 
 ## 8. 참고 파일
 
-- `create_google_form.js` — 폼/결과 시트 생성용 Google Apps Script
-- Make.com blueprint.json — 본 워크플로우의 시나리오 내보내기 파일 (제출 시 계정 라벨의 이메일 부분 마스킹 필요)
+- `Codyssey_3_ProJect/report/프로젝트1_자동화_도구_비교_분석_보고서.md` — **프로젝트1 비교 분석 보고서 초안** (GIF 삽입 자리 포함)
+- `Codyssey_3_ProJect/report/gifs/` — 실동작 GIF 저장 위치 (`README.md`에 파일명 목록)
+- `Codyssey_3_ProJect/create_google_form.js` — 폼/결과 시트 생성용 Google Apps Script
+- `Codyssey_3_ProJect/n8n_워크플로우_설계.md` — 도구 B 설계·설치 계획·Make 대응표
+- `n8n_지출_메모_자동_분류.workflow.json` — n8n 최종 워크플로우
+- `Integration Google Forms, OpenAI (ChatGPT).blueprint.json` — Make 시나리오 내보내기 (제출 시 계정 라벨 이메일 마스킹)
+- `Codyssey_3_ProJect/AI_자동화_도구_비교_분석.md` — 도구 사전 조사 (Zapier/Make/n8n)
