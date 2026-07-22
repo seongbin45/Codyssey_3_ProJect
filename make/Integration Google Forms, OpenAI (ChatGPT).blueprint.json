@@ -9,7 +9,7 @@
                 "limit": 10,
                 "sheetId": "Form Responses 1",
                 "__IMTCONN__": 10009025,
-                "spreadsheetId": "1aZZXJaWqMkydaAICT42N2GKtZiAMbPk6PYCHg3PtUQ4",
+                "spreadsheetId": "***RESPONSE_SHEET_ID***",
                 "tableFirstRow": "A1:Z1",
                 "includesHeaders": true,
                 "valueRenderOption": "FORMATTED_VALUE",
@@ -1076,7 +1076,7 @@
                                     "4": "{{3.result.summary}}"
                                 },
                                 "sheetId": "고액 지출 분류 결과",
-                                "spreadsheetId": "/1wz8bcpjNRIwq8o-skC49M2orEjfBNRpW2eETmjvwmrg",
+                                "spreadsheetId": "/***RESULT_SHEET_ID***",
                                 "includesHeaders": true,
                                 "insertDataOption": "INSERT_ROWS",
                                 "useColumnHeaders": false,
@@ -1423,7 +1423,7 @@
                                     "4": "{{3.result.summary}}"
                                 },
                                 "sheetId": "일반 지출 분류 결과",
-                                "spreadsheetId": "/1wz8bcpjNRIwq8o-skC49M2orEjfBNRpW2eETmjvwmrg",
+                                "spreadsheetId": "/***RESULT_SHEET_ID***",
                                 "includesHeaders": true,
                                 "insertDataOption": "INSERT_ROWS",
                                 "useColumnHeaders": false,
@@ -1770,7 +1770,7 @@
                                     "4": "{{3.result.summary}}"
                                 },
                                 "sheetId": "검토 필요",
-                                "spreadsheetId": "/1wz8bcpjNRIwq8o-skC49M2orEjfBNRpW2eETmjvwmrg",
+                                "spreadsheetId": "/***RESULT_SHEET_ID***",
                                 "includesHeaders": true,
                                 "insertDataOption": "INSERT_ROWS",
                                 "useColumnHeaders": false,

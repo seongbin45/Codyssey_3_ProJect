@@ -108,11 +108,11 @@ function sheetsAppend(name, sheetName, position, nodeId) {
       operation: 'append',
       documentId: {
         __rl: true,
-        value: '1wz8bcpjNRIwq8o-skC49M2orEjfBNRpW2eETmjvwmrg',
+        value: '***RESULT_SHEET_ID***',
         mode: 'list',
         cachedResultName: '지출 자동 분류 결과',
         cachedResultUrl:
-          'https://docs.google.com/spreadsheets/d/1wz8bcpjNRIwq8o-skC49M2orEjfBNRpW2eETmjvwmrg/edit?usp=drivesdk',
+          'https://docs.google.com/spreadsheets/d/***RESULT_SHEET_ID***/edit',
       },
       sheetName: {
         __rl: true,
@@ -240,19 +240,19 @@ const workflow = {
         pollTimes: { item: [{ mode: 'everyMinute' }] },
         documentId: {
           __rl: true,
-          value: '1aZZXJaWqMkydaAICT42N2GKtZiAMbPk6PYCHg3PtUQ4',
+          value: '***RESPONSE_SHEET_ID***',
           mode: 'list',
           cachedResultName: '지출 메모 입력 폼 (응답)',
           cachedResultUrl:
-            'https://docs.google.com/spreadsheets/d/1aZZXJaWqMkydaAICT42N2GKtZiAMbPk6PYCHg3PtUQ4/edit?usp=drivesdk',
+            'https://docs.google.com/spreadsheets/d/***RESPONSE_SHEET_ID***/edit',
         },
         sheetName: {
           __rl: true,
-          value: 1976484975,
+          value: '***SHEET_GID***',
           mode: 'list',
           cachedResultName: 'Form Responses 1',
           cachedResultUrl:
-            'https://docs.google.com/spreadsheets/d/1aZZXJaWqMkydaAICT42N2GKtZiAMbPk6PYCHg3PtUQ4/edit#gid=1976484975',
+            'https://docs.google.com/spreadsheets/d/***RESPONSE_SHEET_ID***/edit#gid=***SHEET_GID***',
         },
         event: 'rowAdded',
         options: {},

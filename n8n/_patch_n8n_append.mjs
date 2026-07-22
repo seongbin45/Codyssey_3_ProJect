@@ -12,9 +12,9 @@ const OUTS = [
   'C:\\Users\\seong\\Downloads\\Codyssey_3_ProJect\\n8n_지출_메모_자동_분류.workflow.json',
 ];
 
-const RESULT_SHEET_ID = '1wz8bcpjNRIwq8o-skC49M2orEjfBNRpW2eETmjvwmrg';
+const RESULT_SHEET_ID = '***RESULT_SHEET_ID***';
 const RESULT_SHEET_NAME = '지출 자동 분류 결과';
-const RESULT_SHEET_URL = `https://docs.google.com/spreadsheets/d/${RESULT_SHEET_ID}/edit?usp=drivesdk`;
+const RESULT_SHEET_URL = `https://docs.google.com/spreadsheets/d/${RESULT_SHEET_ID}/edit`;
 
 const TAB = {
   high: '고액 지출 분류 결과',
@@ -241,7 +241,7 @@ for (const node of workflow.nodes) {
       node.parameters.documentId.mode = 'id';
       node.parameters.documentId.value =
         node.parameters.documentId.value ||
-        '1aZZXJaWqMkydaAICT42N2GKtZiAMbPk6PYCHg3PtUQ4';
+        '***RESPONSE_SHEET_ID***';
     }
     notes.push('Trigger documentId mode=id 고정');
   }

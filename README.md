@@ -61,15 +61,17 @@
 
 ## 3. 사용 리소스 (계정 정보는 마스킹 처리할 것)
 
-| 리소스 | 설명 | 스프레드시트/폼 ID (제출 캡처 시 가림) |
+| 리소스 | 설명 | ID (레포에는 플레이스홀더만) |
 |---|---|---|
-| 구글 폼 | "지출 메모 입력 폼" — 장문형 질문 **「지출 메모」** 1개 | 폼 ID: `1j2SzYUWOGPSxLRA6hrQtthPQBuKoE95suSw2rtGqUnI` |
-| 응답 스프레드시트 | 폼 제출이 쌓이는 시트 — **n8n/Make Trigger 대상** | `1aZZXJaWqMkydaAICT42N2GKtZiAMbPk6PYCHg3PtUQ4` |
-| 결과 스프레드시트 | "지출 자동 분류 결과" — 분기별 Append 대상 | `1wz8bcpjNRIwq8o-skC49M2orEjfBNRpW2eETmjvwmrg` |
+| 구글 폼 | "지출 메모 입력 폼" — 장문형 질문 **「지출 메모」** 1개 | `***FORM_EDIT_ID***` |
+| 응답 스프레드시트 | 폼 제출이 쌓이는 시트 — **n8n/Make Trigger 대상** | `***RESPONSE_SHEET_ID***` |
+| 결과 스프레드시트 | "지출 자동 분류 결과" — 분기별 Append 대상 | `***RESULT_SHEET_ID***` |
 | Google 계정 | `cho***45@gmail.com` | 스크린샷에서도 가릴 것 |
 
-- 스크립트 최초 생성 시 결과 시트 탭은 **「분류 결과」1개**였을 수 있음. Make 구현 기준 README 구조는 탭 3개(**고액 지출 분류 결과 / 일반 지출 분류 결과 / 검토 필요**), 헤더 6열: 타임스탬프·원본 메모·카테고리·금액·요약·특이사항. n8n 조립 전 결과 시트에 이 3탭이 있는지 확인하고, 없으면 동일 헤더로 추가할 것.
-- 폼/시트는 `create_google_form.js` (Google Apps Script)로 생성. **제출용 스크린샷·공유 문서에 URL 전체·시트 ID 노출 금지.**
+- **보안:** 실제 시트/폼 ID·편집 URL은 레포에 넣지 않는다. 로컬 n8n/Make 실행용 원본 ID는 개인 메모·비공개 환경에만 둔다. 제출 캡처에서도 URL·ID 마스킹.
+- 스크립트 최초 생성 시 결과 시트 탭은 **「분류 결과」1개**였을 수 있음. Make 구현 기준은 탭 3개(**고액 지출 분류 결과 / 일반 지출 분류 결과 / 검토 필요**), 헤더 6열: 타임스탬프·원본 메모·카테고리·금액·요약·특이사항.
+- 폼/시트는 `create_google_form.js` (Google Apps Script)로 생성.
+- **구현 차이 메모:** n8n은 `Classification`을 결과 시트「특이사항」에 저장하고 amount를 Code로 숫자 정규화함. Make는 Classification을 Router 필터에만 사용. (비교 보고서 4.7절)
 
 ---
 
