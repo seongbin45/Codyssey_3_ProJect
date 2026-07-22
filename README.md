@@ -157,18 +157,19 @@ Codyssey_3_ProJect/
 ├── README.md                 # 본 문서 (진행 상태)
 ├── 미션.txt                  # 미션 원문
 ├── create_google_form.js     # 폼·결과 시트 생성 Apps Script
-├── Integration Google Forms, OpenAI (ChatGPT).blueprint.json  # Make 시나리오
+├── make/                     # 도구 A (Make) 산출물
+│   ├── Integration Google Forms, OpenAI (ChatGPT).blueprint.json
+│   └── SERWMN5fwEF.jpeg
 ├── gifs/                     # Make 실행 GIF (make_*.gif), n8n 실행 GIF 예정
 ├── png/                      # n8n 설치·OAuth 마찰 PNG/GIF + 렌더 스크립트
-├── n8n/                      # n8n 워크플로·설계·패치 스크립트
+├── n8n/                      # 도구 B 워크플로·설계·패치 스크립트
 │   ├── n8n_지출_메모_자동_분류.workflow.json
 │   ├── n8n_워크플로우_설계.md
-│   ├── _patch_n8n_append.mjs
 │   └── ...
 ├── report/                   # 비교 분석 보고서 Markdown
 │   └── 프로젝트1_자동화_도구_비교_분석_보고서.md
 ├── other/                    # 사전 조사 등 기타 문서
-│   └── README.md             # (구 AI_자동화_도구_비교_분석.md)
+│   └── README.md
 ├── n8n-runtime/              # 로컬 n8n 설치 (gitignore, 미커밋)
 └── n8n-local/                # 로컬 실험용 (gitignore, 미커밋)
 ```
@@ -180,7 +181,7 @@ Codyssey_3_ProJect/
 - `png/` — n8n 설치·OAuth 마찰 이미지 (`README.md`, `_render_setup_friction.py`)
 - `n8n/n8n_지출_메모_자동_분류.workflow.json` — n8n 최종 워크플로우
 - `n8n/n8n_워크플로우_설계.md` — 도구 B 설계·설치 기록
+- `make/` — Make blueprint·관련 이미지
 - `create_google_form.js` — 폼/결과 시트 생성용 Google Apps Script
-- `Integration Google Forms, OpenAI (ChatGPT).blueprint.json` — Make 시나리오 내보내기
 - `other/README.md` — 도구 사전 조사 (Zapier/Make/n8n)
 - `미션.txt` — 미션 명세
