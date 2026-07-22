@@ -158,6 +158,7 @@ Codyssey_3_ProJect/
 ├── 미션.txt                  # 미션 원문
 ├── create_google_form.js     # 폼·결과 시트 생성 Apps Script
 ├── make/                     # 도구 A (Make) 산출물
+│   ├── README.md
 │   ├── Integration Google Forms, OpenAI (ChatGPT).blueprint.json
 │   └── SERWMN5fwEF.jpeg
 ├── gifs/                     # Make 실행 GIF (make_*.gif), n8n 실행 GIF 예정
