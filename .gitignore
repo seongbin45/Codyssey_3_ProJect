@@ -1,0 +1,21 @@
+# Local n8n installs (large node_modules)
+n8n-runtime/
+n8n-local/
+**/node_modules/
+
+# Local AI / tool dumps
+gemini/
+
+# Secrets & keys
+*.pem
+*credentials*.json
+client_secret*.json
+**/codyssey-no-code-automation*.json
+**/*service-account*.json
+.env
+.env.*
+
+# OS / editor
+.DS_Store
+Thumbs.db
+*.log

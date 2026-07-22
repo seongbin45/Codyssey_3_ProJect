@@ -14,7 +14,7 @@
 ## 재생성
 
 ```text
-py -3.12 Codyssey_3_ProJect/report/png/_render_setup_friction.py
+py -3.12 png/_render_setup_friction.py
 ```
 
-스크립트 출력 경로: **이 폴더(png/)**.
+스크립트 출력 경로: **이 폴더(`png/`)**.

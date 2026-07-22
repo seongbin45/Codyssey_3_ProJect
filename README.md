@@ -13,7 +13,7 @@
 | 소속 프로젝트 | **프로젝트 1** (동일 워크플로우를 2개 이상 도구로 구현·비교) — 프로젝트 2(자유 주제)와는 별개 |
 | 주제 | 지능형 지출 관리 및 고액 지출 분류 파이프라인 |
 | 도구 A | Make.com (아래 2~6절 — 구현 진행 중) |
-| 도구 B | **n8n (Self-hosted)** — **최종 워크플로우 확정** → `n8n_지출_메모_자동_분류.workflow.json` (원본: Downloads `지출 메모 자동 분류 (n8n).json`) |
+| 도구 B | **n8n (Self-hosted)** — **최종 워크플로우 확정** → `n8n/n8n_지출_메모_자동_분류.workflow.json` |
 
 ### 도구 B 결정 (Zapier → n8n)
 
@@ -135,13 +135,13 @@
 - [x] n8n@2.31.5 로컬 기동 확인 (`n8n-runtime/`, http://localhost:5678)
 - [x] owner 계정 가입 완료
 - [x] Google Sheets Trigger OAuth2 Account connected
-- [x] 최종 워크플로우 JSON 확정 — `지출 메모 자동 분류 (n8n).json` → 프로젝트 `n8n_지출_메모_자동_분류.workflow.json`
+- [x] 최종 워크플로우 JSON 확정 — `n8n/n8n_지출_메모_자동_분류.workflow.json`
 - [x] Credentials: Trigger OAuth2 + Sheets OAuth2 + OpenAI 연결
-- [x] Append 패치 반영 + 결과 검증 (`Downloads/결과`) — 고액·일반 7/23 행 확인, 검토는 7/21 음수 행으로 분기 입증
-- [x] 비교 분석 보고서 초안 — `Codyssey_3_ProJect/report/프로젝트1_자동화_도구_비교_분석_보고서.md` (GIF 자리 `report/gifs/`)
-- [x] Make 동작 GIF 6개 (`.gif/` → `report/gifs/make_*.gif` 연결)
-- [x] n8n 설치·OAuth 마찰 이미지 (로그 기반) — `report/gifs/n8n_setup_or_oauth.*` + friction 01–06
-- [ ] **n8n 실행 GIF만** 촬영: `n8n_workflow_overview` / `n8n_run_high` / `n8n_run_normal` / `n8n_run_review`
+- [x] Append 패치 반영 + 결과 검증 — 고액·일반 7/23 행 확인, 검토는 7/21 음수 행으로 분기 입증
+- [x] 비교 분석 보고서 초안 — `report/프로젝트1_자동화_도구_비교_분석_보고서.md`
+- [x] Make 동작 GIF 6개 — `gifs/make_*.gif`
+- [x] n8n 설치·OAuth 마찰 이미지 — `png/n8n_setup_or_oauth.*` + friction 01–06
+- [ ] **n8n 실행 GIF만** 촬영: `gifs/n8n_workflow_overview` 등
 - [ ] 테스트 3종 + 분기별 1회 이상 캡처 + 워크플로우 JSON Export
 
 ### 공통
@@ -150,12 +150,37 @@
 
 ---
 
-## 8. 참고 파일
+## 8. 저장소 디렉터리 구조
 
-- `Codyssey_3_ProJect/report/프로젝트1_자동화_도구_비교_분석_보고서.md` — **프로젝트1 비교 분석 보고서 초안** (GIF 삽입 자리 포함)
-- `Codyssey_3_ProJect/report/gifs/` — 실동작 GIF 저장 위치 (`README.md`에 파일명 목록)
-- `Codyssey_3_ProJect/create_google_form.js` — 폼/결과 시트 생성용 Google Apps Script
-- `Codyssey_3_ProJect/n8n_워크플로우_설계.md` — 도구 B 설계·설치 계획·Make 대응표
-- `n8n_지출_메모_자동_분류.workflow.json` — n8n 최종 워크플로우
-- `Integration Google Forms, OpenAI (ChatGPT).blueprint.json` — Make 시나리오 내보내기 (제출 시 계정 라벨 이메일 마스킹)
-- `Codyssey_3_ProJect/AI_자동화_도구_비교_분석.md` — 도구 사전 조사 (Zapier/Make/n8n)
+```text
+Codyssey_3_ProJect/
+├── README.md                 # 본 문서 (진행 상태)
+├── 미션.txt                  # 미션 원문
+├── create_google_form.js     # 폼·결과 시트 생성 Apps Script
+├── Integration Google Forms, OpenAI (ChatGPT).blueprint.json  # Make 시나리오
+├── gifs/                     # Make 실행 GIF (make_*.gif), n8n 실행 GIF 예정
+├── png/                      # n8n 설치·OAuth 마찰 PNG/GIF + 렌더 스크립트
+├── n8n/                      # n8n 워크플로·설계·패치 스크립트
+│   ├── n8n_지출_메모_자동_분류.workflow.json
+│   ├── n8n_워크플로우_설계.md
+│   ├── _patch_n8n_append.mjs
+│   └── ...
+├── report/                   # 비교 분석 보고서 Markdown
+│   └── 프로젝트1_자동화_도구_비교_분석_보고서.md
+├── other/                    # 사전 조사 등 기타 문서
+│   └── README.md             # (구 AI_자동화_도구_비교_분석.md)
+├── n8n-runtime/              # 로컬 n8n 설치 (gitignore, 미커밋)
+└── n8n-local/                # 로컬 실험용 (gitignore, 미커밋)
+```
+
+## 9. 참고 파일
+
+- `report/프로젝트1_자동화_도구_비교_분석_보고서.md` — 프로젝트1 비교 분석 보고서 초안
+- `gifs/` — Make 실동작 GIF · n8n 실행 GIF 촬영본 위치
+- `png/` — n8n 설치·OAuth 마찰 이미지 (`README.md`, `_render_setup_friction.py`)
+- `n8n/n8n_지출_메모_자동_분류.workflow.json` — n8n 최종 워크플로우
+- `n8n/n8n_워크플로우_설계.md` — 도구 B 설계·설치 기록
+- `create_google_form.js` — 폼/결과 시트 생성용 Google Apps Script
+- `Integration Google Forms, OpenAI (ChatGPT).blueprint.json` — Make 시나리오 내보내기
+- `other/README.md` — 도구 사전 조사 (Zapier/Make/n8n)
+- `미션.txt` — 미션 명세
