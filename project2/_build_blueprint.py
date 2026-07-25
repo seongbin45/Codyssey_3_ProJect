@@ -124,16 +124,25 @@ def main() -> None:
         150,
     )
 
-    # Email alert on urgent branch (remap To + connection after import)
-    email_mod = {
+    # 긴급 알림: Make 기본 email:ActionSendEmail 은 계정/존에서
+    # "Module Not Found" 가 나는 경우가 많아 Gmail 모듈을 쓴다.
+    # Import 후 Google 연결 + To 주소만 재설정하면 된다.
+    gmail_conn = sheet_tpl["parameters"].get("__IMTCONN__")
+    gmail_restore = (
+        sheet_tpl.get("metadata", {})
+        .get("restore", {})
+        .get("parameters", {})
+        .get("__IMTCONN__", {})
+    )
+    alert_mod = {
         "id": 5,
-        "module": "email:ActionSendEmail",
-        "version": 1,
-        "parameters": {},
+        "module": "google-email:sendAnEmail",
+        "version": 2,
+        "parameters": {"__IMTCONN__": gmail_conn},
         "mapper": {
             "to": ["***ALERT_EMAIL***"],
             "subject": "[FinFit 긴급 문의] {{2.result.category}} — {{2.result.summary}}",
-            "content": (
+            "text": (
                 "긴급 문의가 접수되었습니다.\n\n"
                 "요약: {{2.result.summary}}\n"
                 "카테고리: {{2.result.category}}\n"
@@ -141,14 +150,32 @@ def main() -> None:
                 "원문: {{1.`1`}}\n"
                 "접수시각: {{1.`0`}}\n"
             ),
+            "cc": [],
+            "attachments": [],
         },
         "metadata": {
             "designer": {"x": 1000, "y": -150},
-            "restore": {},
+            "restore": {
+                "parameters": {
+                    "__IMTCONN__": gmail_restore
+                    or {
+                        "data": {"scoped": "true", "connection": "google"},
+                        "label": "My Google connection (cho***45@gmail.com)",
+                    }
+                }
+            },
+            "parameters": [
+                {
+                    "name": "__IMTCONN__",
+                    "type": "account:google",
+                    "label": "Connection",
+                    "required": True,
+                }
+            ],
             "expect": [
                 {"name": "to", "type": "array", "label": "To", "spec": {"type": "email"}},
                 {"name": "subject", "type": "text", "label": "Subject"},
-                {"name": "content", "type": "text", "label": "Content"},
+                {"name": "text", "type": "text", "label": "Content"},
             ],
             "interface": [],
         },
@@ -157,7 +184,7 @@ def main() -> None:
     router["id"] = 3
     router["metadata"]["designer"] = {"x": 550, "y": 0}
     router["routes"] = [
-        {"flow": [urgent_sheet, email_mod]},
+        {"flow": [urgent_sheet, alert_mod]},
         {"flow": [normal_sheet]},
     ]
 
@@ -190,7 +217,8 @@ def main() -> None:
                         "(2) 결과 시트 탭「긴급 문의」「일반 문의」 "
                         "헤더: 타임스탬프|원본 문의|긴급도|카테고리|요약|연락처 "
                         "(3) OpenAI connection "
-                        "(4) 긴급 Email To. "
+                        "(4) 긴급 분기 Gmail(Send an Email) Connection + To. "
+                        "email:ActionSendEmail 은 Module Not Found 날 수 있어 Gmail 사용. "
                         "테스트: 결제 장애(긴급) / 다크모드 요청(일반)."
                     ),
                 }

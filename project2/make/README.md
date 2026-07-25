@@ -32,6 +32,12 @@
 4. **`FinFit_inquiry_auto_triage.LOCAL.blueprint.json`** 선택 (없으면 공개용 JSON + 아래 재매핑)  
 5. Connection 연결 후 **Run once** · 스케줄 ON  
 
+> **Module Not Found (`email:ActionSendEmail`)**  
+> 구 Blueprint의 기본 Email 앱이 계정/리전에 없으면 빨간 `!` 가 뜬다.  
+> 현재 Blueprint는 **Gmail – Send an Email** 로 바꿔 두었다.  
+> 이미 Import한 시나리오면: 빨간 모듈 삭제 → **+** → **Gmail** → **Send an Email** 추가 후  
+> To / 제목 / 본문에 `{{2.result.*}}`, `{{1.1}}` 매핑. 알림 없이 가려면 모듈만 지워도 됨(긴급 시트 기록은 유지).
+
 ### Import 후 필수 재매핑
 
 | 모듈 | 할 일 | 로그/로컬 값 |
@@ -40,7 +46,7 @@
 | **2. OpenAI – Create a Completion** | OpenAI connection · `json_object` · parse JSON 유지 | 프로젝트1과 동일 계정 가능 |
 | **3. Router** | 필터: `{{2.result.urgency}}` = `긴급` / `일반` | 수정 불필요(이미 설정) |
 | **4. Sheets – 긴급 문의** | Spreadsheet = **결과 시트** · 탭 **`긴급 문의`** | 로그 ③ 결과 시트 URL |
-| **5. Email – Send an Email** | To = 담당자 메일 · Email/Gmail connection | 직접 입력 (Slack 대체 가능) |
+| **5. Gmail – Send an Email** | Google connection · **To** = 담당자 메일 | 기본 `email:…` 모듈은 Make에서 **Module Not Found** 날 수 있어 **Gmail** 사용 |
 | **6. Sheets – 일반 문의** | 동일 결과 시트 · 탭 **`일반 문의`** | 로그 ③ |
 
 **LOCAL Blueprint** 를 쓰면 1·4·6의 시트 ID는 이미 채워져 있어 **Connection 선택 + Email To** 만 하면 된다.  
@@ -70,7 +76,7 @@ UI에서 시트가 안 보이면 Spreadsheet를 한 번 다시 고르거나 ID �
 [1] google-forms:watchRows     문의 폼 응답 폴링
   → [2] openai-gpt-3:CreateCompletion   JSON { urgency, category, summary }
   → [3] builtin:BasicRouter
-       ├─ urgency = "긴급" → [4] Sheets「긴급 문의」 + [5] Email 알림
+       ├─ urgency = "긴급" → [4] Sheets「긴급 문의」 + [5] Gmail Send an Email
        └─ urgency = "일반" → [6] Sheets「일반 문의」만
 ```
 
