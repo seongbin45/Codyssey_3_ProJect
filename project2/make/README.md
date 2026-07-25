@@ -7,11 +7,13 @@
 
 | 파일 | 설명 | Git |
 |------|------|-----|
-| `FinFit_inquiry_auto_triage.blueprint.json` | 공개용 Blueprint (시트 ID **마스킹**) | ✅ 커밋 |
-| `FinFit_inquiry_auto_triage.LOCAL.blueprint.json` | **실 ID 채운 Import용** (Apps Script 로그 반영) | ❌ gitignore |
+| `FinFit_inquiry_auto_triage.blueprint.json` | 공개용 Blueprint (시트·Slack ID **마스킹**, Slack 본문 포함) | ✅ 커밋 |
+| `../FinFit 팀 문의 피드백 자동 분류 (project2).blueprint.json` | Make Export 정리본 (동일 공개 마스킹) | ✅ 커밋 |
+| `FinFit_inquiry_auto_triage.LOCAL.blueprint.json` | **실 ID** Import용 (로컬 전용) | ❌ gitignore |
 | `local_ids.json` | 폼·시트 URL/ID 로컬 메모 | ❌ gitignore |
 | `README.md` | 본 안내 | ✅ |
-| `../_build_blueprint.py` | 마스킹 Blueprint 재생성 | ✅ |
+| `../_normalize_export_blueprint.py` | Export → 수정·마스킹 재생성 | ✅ |
+| `../_build_blueprint.py` | 초기 생성 스크립트 (참고) | ✅ |
 | `../create_google_form_Project_2.js` | 문의 폼·결과 시트 생성 Apps Script | ✅ |
 
 ## 리소스 준비 상태 (2026-07-26 Apps Script 로그 기준)
@@ -46,7 +48,7 @@
 | **2. OpenAI – Create a Completion** | OpenAI connection · `json_object` · parse JSON 유지 | 프로젝트1과 동일 계정 가능 |
 | **3. Router** | 필터: `{{2.result.urgency}}` = `긴급` / `일반` | 수정 불필요(이미 설정) |
 | **4. Sheets – 긴급 문의** | Spreadsheet = **결과 시트** · 탭 **`긴급 문의`** | 로그 ③ 결과 시트 URL |
-| **5. Gmail – Send an Email** | Google connection · **To** = 담당자 메일 | 기본 `email:…` 모듈은 Make에서 **Module Not Found** 날 수 있어 **Gmail** 사용 |
+| **5. Slack – Create a Message** (또는 Gmail) | Slack 연결 · 채널 재선택 · **Text** 본문에 긴급 템플릿 | Export 정리본에 `text` 매핑 포함. 채널 ID는 Import 후 본인 워크스페이스로 |
 | **6. Sheets – 일반 문의** | 동일 결과 시트 · 탭 **`일반 문의`** | 로그 ③ |
 
 **LOCAL Blueprint** 를 쓰면 1·4·6의 시트 ID는 이미 채워져 있어 **Connection 선택 + Email To** 만 하면 된다.  
@@ -76,9 +78,17 @@ UI에서 시트가 안 보이면 Spreadsheet를 한 번 다시 고르거나 ID �
 [1] google-forms:watchRows     문의 폼 응답 폴링
   → [2] openai-gpt-3:CreateCompletion   JSON { urgency, category, summary }
   → [3] builtin:BasicRouter
-       ├─ urgency = "긴급" → [4] Sheets「긴급 문의」 + [5] Gmail Send an Email
+       ├─ urgency = "긴급" → [4] Sheets「긴급 문의」 + [5] Slack Create a Message
        └─ urgency = "일반" → [6] Sheets「일반 문의」만
 ```
+
+### Export 정리 시 고친 점
+
+| 이슈 | 조치 |
+|------|------|
+| Slack `text` 비어 있음 | 긴급 알림 본문 템플릿 삽입 (`{{2.result.*}}`, `{{1.1}}`) |
+| `spreadsheetId` 슬래시 감싸기 | ID만 남김 → Sheets 404 방지 |
+| 실 시트/채널 ID 공개 노출 | 공개 Blueprint는 `***…***` 마스킹, LOCAL만 실 ID |
 
 ## Google Sheets `[404] Requested entity was not found` 점검
 
