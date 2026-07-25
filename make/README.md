@@ -58,5 +58,5 @@ Google Forms / 응답 시트 폴링
 | `../미션.txt` | 미션 원문 |
 | `../README.md` | 저장소 진행 상태 |
 | `../report/프로젝트1_자동화_도구_비교_분석_보고서.md` | 비교 분석 보고서 |
-| `../create_google_form.js` | 폼·결과 시트 생성 Apps Script |
+| `../create_google_form_Project_1.js` | 프로젝트1 폼·결과 시트 생성 Apps Script |
 | `../n8n/` | 동일 파이프라인 도구 B |

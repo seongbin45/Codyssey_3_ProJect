@@ -12,6 +12,7 @@
 | `local_ids.json` | 폼·시트 URL/ID 로컬 메모 | ❌ gitignore |
 | `README.md` | 본 안내 | ✅ |
 | `../_build_blueprint.py` | 마스킹 Blueprint 재생성 | ✅ |
+| `../create_google_form_Project_2.js` | 문의 폼·결과 시트 생성 Apps Script | ✅ |
 
 ## 리소스 준비 상태 (2026-07-26 Apps Script 로그 기준)
 

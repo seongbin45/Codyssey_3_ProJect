@@ -87,6 +87,7 @@ project2/
 | `design.md` | 업무 정의, Make 선정 이유, 2-way 구조, JSON 스키마, 테스트 케이스 |
 | `make/FinFit_inquiry_auto_triage.blueprint.json` | **Make 바로 Import** 용 Blueprint |
 | `make/README.md` | Import 절차·시트 헤더·재매핑 안내 |
+| `create_google_form_Project_2.js` | 문의 폼·결과 시트(긴급/일반 탭) Apps Script |
 | `_build_blueprint.py` | Blueprint 재생성 스크립트 |
 
 파일·하위 폴더를 추가할 때마다 **해당 폴더 README** 또는 본 README 표를 갱신한다.

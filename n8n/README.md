@@ -76,4 +76,4 @@ node n8n/_patch_n8n_append.mjs
 | `../README.md` | 저장소 전체 진행 상태 |
 | `../report/프로젝트1_자동화_도구_비교_분석_보고서.md` | 비교 분석 (설정 난이도·마찰 포함) |
 | `../make/` | 동일 파이프라인 도구 A |
-| `../create_google_form.js` | 폼·결과 시트 생성 |
+| `../create_google_form_Project_1.js` | 프로젝트1 폼·결과 시트 생성 |

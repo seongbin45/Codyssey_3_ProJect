@@ -71,7 +71,7 @@
 
 - **보안:** 실제 시트/폼 ID·편집 URL은 레포에 넣지 않는다. 로컬 n8n/Make 실행용 원본 ID는 개인 메모·비공개 환경에만 둔다. 제출 캡처에서도 URL·ID 마스킹.
 - 스크립트 최초 생성 시 결과 시트 탭은 **「분류 결과」1개**였을 수 있음. Make 구현 기준은 탭 3개(**고액 지출 분류 결과 / 일반 지출 분류 결과 / 검토 필요**), 헤더 6열: 타임스탬프·원본 메모·카테고리·금액·요약·특이사항.
-- 폼/시트는 `create_google_form.js` (Google Apps Script)로 생성.
+- 폼/시트는 `create_google_form_Project_1.js` (Google Apps Script)로 생성. 프로젝트2는 `project2/create_google_form_Project_2.js`.
 - **구현 차이 메모:** n8n은 `Classification`을 결과 시트「특이사항」에 저장하고 amount를 Code로 숫자 정규화함. Make는 Classification을 Router 필터에만 사용. (비교 보고서 4.7절)
 
 ---
@@ -161,7 +161,7 @@
 Codyssey_3_ProJect/
 ├── README.md                 # 본 문서 — 하위 폴더마다 README.md 필수
 ├── 미션.txt                  # 미션 원문
-├── create_google_form.js     # 폼·결과 시트 생성 Apps Script
+├── create_google_form_Project_1.js  # 프로젝트1 폼·결과 시트 Apps Script
 ├── make/                     # 도구 A — README + blueprint + 캔버스 캡처
 ├── make_gif/                 # 실행 GIF 영문 별칭 (Make 6 + n8n 6) — README
 ├── n8n_gif/                  # n8n 녹화 원본(한글) + 매핑 — README
@@ -191,6 +191,7 @@ Codyssey_3_ProJect/
 - `png/` — n8n 설치·OAuth 마찰 이미지
 - `n8n/` — n8n 최종 워크플로·설계·README
 - `make/` — Make blueprint·캡처·README
-- `create_google_form.js` — 폼/결과 시트 생성용 Google Apps Script
+- `create_google_form_Project_1.js` — 프로젝트1 폼/결과 시트 생성 Apps Script
+- `project2/create_google_form_Project_2.js` — 프로젝트2 문의 폼/결과 시트 생성
 - `other/README.md` — 도구 사전 조사 (Zapier/Make/n8n)
 - `미션.txt` — 미션 명세
