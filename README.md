@@ -151,7 +151,7 @@
 ### 공통
 - [x] 프로젝트1 비교 분석 보고서 작성 (도구명·구현 요약·비교 항목 5개 이상·장단점·적합 상황 — Zapier 미채택 사유도 포함)
 - [x] 보고서 제출본 정리 (Make Free **1,000 크레딧/월** 반영, 정지 캡처 마스킹 검수)
-- [ ] **프로젝트2(자유 주제)** — `project2/` 폴더에서 진행 (브랜치 분리 없음, main 유지)
+- [ ] **프로젝트2(자유 주제)** — `project2/` (브랜치 없음·main 유지). 후보·규칙: `project2/README.md`. **추천 주제: 팀 문의/피드백 자동 분류** (확정 대기)
 
 ---
 
@@ -169,6 +169,7 @@ Codyssey_3_ProJect/
 ├── n8n/                      # 도구 B 워크플로·설계·스크립트 — README
 ├── report/                   # 비교 분석 보고서 — README
 ├── other/                    # 사전 조사 (본문=README) — README
+├── project2/                 # 프로젝트 2 자유 주제 — README (주제 확정 대기)
 ├── n8n-runtime/              # 로컬 n8n (gitignore) — README 안내만
 └── n8n-local/                # 로컬 실험 (gitignore) — README 안내만
 ```
