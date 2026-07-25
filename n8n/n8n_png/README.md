@@ -49,5 +49,5 @@ py -3.12 n8n/n8n_png/_render_setup_friction.py
 | 경로 | 설명 |
 |------|------|
 | `../n8n_워크플로우_설계.md` | 설치·OAuth 서술형 기록 |
-| `../../report/…보고서.md` | 마찰 GIF/PNG 임베드 |
+| `../../report/프로젝트1_자동화_도구_비교_분석_보고서.md` | 마찰 GIF/PNG 임베드 |
 | `../../make/make_gif/` | 실행(런타임) 증명 GIF |

@@ -55,7 +55,7 @@
 | `../Make_workflow_view.jpeg` | Make 캔버스 정지 캡처 |
 | `../../n8n/n8n_workflow_view.png` | n8n 캔버스 정지 캡처 |
 | `../../n8n/n8n_png/` | 설치·OAuth **마찰** 이미지 (실행 GIF 아님) |
-| `../../report/…보고서.md` | 본 폴더 GIF를 본문에 임베드 |
+| `../../report/프로젝트1_자동화_도구_비교_분석_보고서.md` | 본 폴더 GIF를 본문에 임베드 |
 
 ## 유지 규칙
 
