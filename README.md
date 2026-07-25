@@ -141,13 +141,14 @@
 - [x] Credentials: Trigger OAuth2 + Sheets OAuth2 + OpenAI 연결
 - [x] Append 패치 반영 + 결과 검증 — 고액·일반 7/23 행 확인, 검토는 7/21 음수 행으로 분기 입증
 - [x] 비교 분석 보고서 초안 — `report/프로젝트1_자동화_도구_비교_분석_보고서.md`
-- [x] Make 동작 GIF 6개 — `gifs/make_*.gif`
+- [x] Make 동작 GIF 6개 — `gif/make_*.gif`
 - [x] n8n 설치·OAuth 마찰 이미지 — `png/n8n_setup_or_oauth.*` + friction 01–06
-- [ ] **n8n 실행 GIF만** 촬영: `gifs/n8n_workflow_overview` 등
-- [ ] 테스트 3종 + 분기별 1회 이상 캡처 + 워크플로우 JSON Export
+- [x] **n8n 실행 GIF 6개** — `gif/n8n_{high|normal|review}_{1_form|2_action}.gif` (원본 `n8n_gif/`, 내용 기준 별칭)
+- [x] 테스트 3종 + 분기별 1회 이상 캡처 + 워크플로우 JSON Export
+- [x] 워크플로우 정지 캡처 — `make/Make_workflow_view.jpeg`, `n8n/n8n_workflow_view.png`
 
 ### 공통
-- [ ] 프로젝트1 비교 분석 보고서 작성 (도구명·구현 요약·비교 항목 5개 이상·장단점·적합 상황 — Zapier 미채택 사유도 포함)
+- [x] 프로젝트1 비교 분석 보고서 작성 (도구명·구현 요약·비교 항목 5개 이상·장단점·적합 상황 — Zapier 미채택 사유도 포함)
 - [ ] **프로젝트2(자유 주제) 반복 업무 정의 및 구현** — 현재 완전히 미착수, 프로젝트1과 별개로 새로 시작해야 함
 
 ---
@@ -162,13 +163,14 @@ Codyssey_3_ProJect/
 ├── make/                     # 도구 A (Make) 산출물
 │   ├── README.md
 │   ├── Integration Google Forms, OpenAI (ChatGPT).blueprint.json
-│   └── SERWMN5fwEF.jpeg
-├── gifs/                     # Make 실행 GIF (make_*.gif), n8n 실행 GIF 예정
+│   └── Make_workflow_view.jpeg
+├── gif/                      # Make·n8n 실행 증명 GIF (영문 별칭)
+├── n8n_gif/                  # n8n 녹화 원본(한글 파일명) + 매핑 README
 ├── png/                      # n8n 설치·OAuth 마찰 PNG/GIF + 렌더 스크립트
 ├── n8n/                      # 도구 B 워크플로·설계·패치 스크립트
 │   ├── n8n_지출_메모_자동_분류.workflow.json
 │   ├── n8n_워크플로우_설계.md
-│   └── ...
+│   └── n8n_workflow_view.png
 ├── report/                   # 비교 분석 보고서 Markdown
 │   └── 프로젝트1_자동화_도구_비교_분석_보고서.md
 ├── other/                    # 사전 조사 등 기타 문서
@@ -179,8 +181,9 @@ Codyssey_3_ProJect/
 
 ## 9. 참고 파일
 
-- `report/프로젝트1_자동화_도구_비교_분석_보고서.md` — 프로젝트1 비교 분석 보고서 초안
-- `gifs/` — Make 실동작 GIF · n8n 실행 GIF 촬영본 위치
+- `report/프로젝트1_자동화_도구_비교_분석_보고서.md` — 프로젝트1 비교 분석 보고서
+- `gif/` — Make·n8n 실동작 GIF (영문 별칭, 보고서 링크 대상)
+- `n8n_gif/` — n8n 녹화 원본 + 내용 기준 매핑 안내
 - `png/` — n8n 설치·OAuth 마찰 이미지 (`README.md`, `_render_setup_friction.py`)
 - `n8n/n8n_지출_메모_자동_분류.workflow.json` — n8n 최종 워크플로우
 - `n8n/n8n_워크플로우_설계.md` — 도구 B 설계·설치 기록

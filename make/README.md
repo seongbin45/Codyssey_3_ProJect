@@ -34,16 +34,16 @@ Google Forms / 응답 시트 폴링
 
 ## 실행 데모 GIF
 
-Make **실행 화면 GIF**는 확장자 구분을 위해 루트 `../gifs/` 에 둔다.
+Make **실행 화면 GIF**는 확장자 구분을 위해 루트 `../gif/` 에 둔다.
 
 | 파일 | 내용 |
 |------|------|
-| `../gifs/make_high_1_form.gif` | 고액 · 폼 응답 |
-| `../gifs/make_high_2_action.gif` | 고액 · 시나리오 액션 |
-| `../gifs/make_normal_1_form.gif` | 일반 · 폼 응답 |
-| `../gifs/make_normal_2_action.gif` | 일반 · 시나리오 액션 |
-| `../gifs/make_review_1_form.gif` | 미분류(기타) · 폼 응답 |
-| `../gifs/make_review_2_action.gif` | 미분류(기타) · 시나리오 액션 |
+| `../gif/make_high_1_form.gif` | 고액 · 폼 응답 |
+| `../gif/make_high_2_action.gif` | 고액 · 시나리오 액션 |
+| `../gif/make_normal_1_form.gif` | 일반 · 폼 응답 |
+| `../gif/make_normal_2_action.gif` | 일반 · 시나리오 액션 |
+| `../gif/make_review_1_form.gif` | 미분류(기타) · 폼 응답 |
+| `../gif/make_review_2_action.gif` | 미분류(기타) · 시나리오 액션 |
 
 ## 관련 문서
 

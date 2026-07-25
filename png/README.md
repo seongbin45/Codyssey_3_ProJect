@@ -1,7 +1,7 @@
 # report/png — n8n 설치·OAuth 마찰 미디어
 
 확장자가 `.png` / 생성 스크립트·안내 문서를 이 폴더에 모은다.  
-(Make 실행 GIF는 `report/gifs/` 에 둔다.)
+(Make·n8n 실행 GIF는 루트 `gif/` 에 둔다.)
 
 ## 포함 파일
 
