@@ -2,7 +2,8 @@
 
 > Codyssey "AI 도구 학습" 커리큘럼 — 노코드 자동화 기초: 워크플로우 설계 미션  
 > 프로젝트1: 동일 워크플로우를 **도구 A(Make.com) + 도구 B(n8n)** 로 구현·비교. 비교 분석 보고서·프로젝트2는 별도.  
-> **작업 규칙:** 이 저장소에서 수정이 생기면 **GitHub(`origin/main`)에 먼저 커밋·푸시**한다.
+> **작업 규칙:** 이 저장소에서 수정이 생기면 **GitHub(`origin/main`)에 먼저 커밋·푸시**한다.  
+> **폴더 규칙:** 산출물 폴더를 만들거나 파일을 추가·이동하면 **그 폴더에 `README.md`를 두고**, 포함 파일·역할·관련 경로를 **상세히** 적는다 (앞으로 항상).
 
 ---
 
@@ -141,9 +142,9 @@
 - [x] Credentials: Trigger OAuth2 + Sheets OAuth2 + OpenAI 연결
 - [x] Append 패치 반영 + 결과 검증 — 고액·일반 7/23 행 확인, 검토는 7/21 음수 행으로 분기 입증
 - [x] 비교 분석 보고서 초안 — `report/프로젝트1_자동화_도구_비교_분석_보고서.md`
-- [x] Make 동작 GIF 6개 — `gif/make_*.gif`
+- [x] Make 동작 GIF 6개 — `make_gif/make_*.gif`
 - [x] n8n 설치·OAuth 마찰 이미지 — `png/n8n_setup_or_oauth.*` + friction 01–06
-- [x] **n8n 실행 GIF 6개** — `gif/n8n_{high|normal|review}_{1_form|2_action}.gif` (원본 `n8n_gif/`, 내용 기준 별칭)
+- [x] **n8n 실행 GIF 6개** — `make_gif/n8n_{high|normal|review}_{1_form|2_action}.gif` (원본 `n8n_gif/`, 내용 기준 별칭)
 - [x] 테스트 3종 + 분기별 1회 이상 캡처 + 워크플로우 JSON Export
 - [x] 워크플로우 정지 캡처 — `make/Make_workflow_view.jpeg`, `n8n/n8n_workflow_view.png`
 
@@ -157,37 +158,37 @@
 
 ```text
 Codyssey_3_ProJect/
-├── README.md                 # 본 문서 (진행 상태)
+├── README.md                 # 본 문서 — 하위 폴더마다 README.md 필수
 ├── 미션.txt                  # 미션 원문
 ├── create_google_form.js     # 폼·결과 시트 생성 Apps Script
-├── make/                     # 도구 A (Make) 산출물
-│   ├── README.md
-│   ├── Integration Google Forms, OpenAI (ChatGPT).blueprint.json
-│   └── Make_workflow_view.jpeg
-├── gif/                      # Make·n8n 실행 증명 GIF (영문 별칭)
-├── n8n_gif/                  # n8n 녹화 원본(한글 파일명) + 매핑 README
-├── png/                      # n8n 설치·OAuth 마찰 PNG/GIF + 렌더 스크립트
-├── n8n/                      # 도구 B 워크플로·설계·패치 스크립트
-│   ├── n8n_지출_메모_자동_분류.workflow.json
-│   ├── n8n_워크플로우_설계.md
-│   └── n8n_workflow_view.png
-├── report/                   # 비교 분석 보고서 Markdown
-│   └── 프로젝트1_자동화_도구_비교_분석_보고서.md
-├── other/                    # 사전 조사 등 기타 문서
-│   └── README.md
-├── n8n-runtime/              # 로컬 n8n 설치 (gitignore, 미커밋)
-└── n8n-local/                # 로컬 실험용 (gitignore, 미커밋)
+├── make/                     # 도구 A — README + blueprint + 캔버스 캡처
+├── make_gif/                 # 실행 GIF 영문 별칭 (Make 6 + n8n 6) — README
+├── n8n_gif/                  # n8n 녹화 원본(한글) + 매핑 — README
+├── png/                      # 설치·OAuth 마찰 미디어 — README
+├── n8n/                      # 도구 B 워크플로·설계·스크립트 — README
+├── report/                   # 비교 분석 보고서 — README
+├── other/                    # 사전 조사 (본문=README) — README
+├── n8n-runtime/              # 로컬 n8n (gitignore) — README 안내만
+└── n8n-local/                # 로컬 실험 (gitignore) — README 안내만
 ```
+
+### 폴더 README 규칙 (항상)
+
+| 규칙 | 설명 |
+|------|------|
+| 필수 | 산출물 폴더마다 `README.md` |
+| 내용 | 폴더 목적, **파일별 설명 표**, 명명/매핑, 관련 경로, 유지 시 주의 |
+| 갱신 | 파일 추가·이름 변경·이동 시 **같은 커밋에서** README도 수정 |
+| 예외 | `node_modules/` 내부 제외. gitignore 런타임 폴더는 용도 안내 README만 |
 
 ## 9. 참고 파일
 
 - `report/프로젝트1_자동화_도구_비교_분석_보고서.md` — 프로젝트1 비교 분석 보고서
-- `gif/` — Make·n8n 실동작 GIF (영문 별칭, 보고서 링크 대상)
+- `make_gif/` — Make·n8n 실동작 GIF (영문 별칭, 보고서 링크 대상)
 - `n8n_gif/` — n8n 녹화 원본 + 내용 기준 매핑 안내
-- `png/` — n8n 설치·OAuth 마찰 이미지 (`README.md`, `_render_setup_friction.py`)
-- `n8n/n8n_지출_메모_자동_분류.workflow.json` — n8n 최종 워크플로우
-- `n8n/n8n_워크플로우_설계.md` — 도구 B 설계·설치 기록
-- `make/` — Make blueprint·관련 이미지
+- `png/` — n8n 설치·OAuth 마찰 이미지
+- `n8n/` — n8n 최종 워크플로·설계·README
+- `make/` — Make blueprint·캡처·README
 - `create_google_form.js` — 폼/결과 시트 생성용 Google Apps Script
 - `other/README.md` — 도구 사전 조사 (Zapier/Make/n8n)
 - `미션.txt` — 미션 명세
