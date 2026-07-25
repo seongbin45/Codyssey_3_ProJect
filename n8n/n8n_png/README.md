@@ -1,4 +1,4 @@
-# png/ — n8n 설치·OAuth 마찰 미디어
+# n8n_png/ — n8n 설치·OAuth 마찰 미디어
 
 실행 데모 GIF가 아니라, n8n **설치·빌드·Google OAuth 연결** 과정에서 겪은 마찰을  
 로그 문구 기반으로 재구성한 **정지 패널 + 스토리보드 애니메이션**을 둔다.  
@@ -8,7 +8,7 @@
 |------|------|
 | 목적 | Self-host 무료의 대가(Windows SDK, node-gyp, OAuth)를 시각 증거로 남김 |
 | 폰트 | Windows 맑은 고딕 (`malgun.ttf`) — 한글 깨짐 방지 |
-| 실행 GIF 위치 | `../make_gif/` (이 폴더 아님) |
+| 실행 GIF 위치 | `../../make/make_gif/` (이 폴더 아님) |
 
 ## 파일 목록
 
@@ -39,15 +39,15 @@
 ## 재생성
 
 ```text
-py -3.12 png/_render_setup_friction.py
+py -3.12 n8n/n8n_png/_render_setup_friction.py
 ```
 
-출력 경로: **이 폴더(`png/`)**. 스크립트 수정 후 장면 문구를 바꾸면 보고서 캡션과 맞는지 확인한다.
+출력 경로: **이 폴더(`n8n_png/`)**. 스크립트 수정 후 장면 문구를 바꾸면 보고서 캡션과 맞는지 확인한다.
 
 ## 관련 경로
 
 | 경로 | 설명 |
 |------|------|
-| `../n8n/n8n_워크플로우_설계.md` | 설치·OAuth 서술형 기록 |
-| `../report/…보고서.md` | 마찰 GIF/PNG 임베드 |
-| `../make_gif/` | 실행(런타임) 증명 GIF |
+| `../n8n_워크플로우_설계.md` | 설치·OAuth 서술형 기록 |
+| `../../report/…보고서.md` | 마찰 GIF/PNG 임베드 |
+| `../../make/make_gif/` | 실행(런타임) 증명 GIF |

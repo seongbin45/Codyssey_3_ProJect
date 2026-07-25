@@ -21,12 +21,12 @@
 
 | 상대 경로 | 용도 |
 |-----------|------|
-| `../make_gif/make_*.gif` | Make 고액/일반/검토 × 폼·액션 |
-| `../make_gif/n8n_*.gif` | n8n 동일 패턴 (내용 기준 영문 별칭) |
+| `../make/make_gif/make_*.gif` | Make 고액/일반/검토 × 폼·액션 |
+| `../make/make_gif/n8n_*.gif` | n8n 동일 패턴 (내용 기준 영문 별칭) |
 | `../n8n/n8n_workflow_view.png` | n8n 캔버스 정지 캡처 |
 | `../make/Make_workflow_view.jpeg` | Make 캔버스 정지 캡처 |
-| `../png/n8n_setup_or_oauth.*` | 설치·OAuth 마찰 스토리보드 |
-| `../png/n8n_friction_0*.png` | 장면별 정지 패널 |
+| `../n8n/n8n_png/n8n_setup_or_oauth.*` | 설치·OAuth 마찰 스토리보드 |
+| `../n8n/n8n_png/n8n_friction_0*.png` | 장면별 정지 패널 |
 
 ## 문서 구조 (보고서 목차 요약)
 

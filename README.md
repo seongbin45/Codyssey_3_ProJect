@@ -143,9 +143,9 @@
 - [x] Credentials: Trigger OAuth2 + Sheets OAuth2 + OpenAI 연결
 - [x] Append 패치 반영 + 결과 검증 — 고액·일반 7/23 행 확인, 검토는 7/21 음수 행으로 분기 입증
 - [x] 비교 분석 보고서 초안 — `report/프로젝트1_자동화_도구_비교_분석_보고서.md`
-- [x] Make 동작 GIF 6개 — `make_gif/make_*.gif`
-- [x] n8n 설치·OAuth 마찰 이미지 — `png/n8n_setup_or_oauth.*` + friction 01–06
-- [x] **n8n 실행 GIF 6개** — `make_gif/n8n_{high|normal|review}_{1_form|2_action}.gif` (원본 `n8n_gif/`, 내용 기준 별칭)
+- [x] Make 동작 GIF 6개 — `make/make_gif/make_*.gif`
+- [x] n8n 설치·OAuth 마찰 이미지 — `n8n/n8n_png/n8n_setup_or_oauth.*` + friction 01–06
+- [x] **n8n 실행 GIF 6개** — `make/make_gif/n8n_*.gif` (원본 `n8n/n8n_gif/`, 내용 기준 별칭)
 - [x] 테스트 3종 + 분기별 1회 이상 캡처 + 워크플로우 JSON Export
 - [x] 워크플로우 정지 캡처 — `make/Make_workflow_view.jpeg`, `n8n/n8n_workflow_view.png`
 
@@ -163,14 +163,14 @@ Codyssey_3_ProJect/
 ├── README.md                 # 본 문서 — 하위 폴더마다 README.md 필수
 ├── 미션.txt                  # 미션 원문
 ├── create_google_form_Project_1.js  # 프로젝트1 폼·결과 시트 Apps Script
-├── make/                     # 도구 A — README + blueprint + 캔버스 캡처
-├── make_gif/                 # 실행 GIF 영문 별칭 (Make 6 + n8n 6) — README
-├── n8n_gif/                  # n8n 녹화 원본(한글) + 매핑 — README
-├── png/                      # 설치·OAuth 마찰 미디어 — README
-├── n8n/                      # 도구 B 워크플로·설계·스크립트 — README
+├── make/                     # 도구 A — blueprint + make_gif/ + 캔버스 캡처
+│   └── make_gif/             # 실행 GIF 영문 별칭 (Make 6 + n8n 6)
+├── n8n/                      # 도구 B — 워크플로·n8n_gif/·n8n_png/
+│   ├── n8n_gif/              # n8n 녹화 원본(한글)
+│   └── n8n_png/              # 설치·OAuth 마찰 미디어
 ├── report/                   # 비교 분석 보고서 — README
 ├── other/                    # 사전 조사 (본문=README) — README
-├── project2/                 # 프로젝트 2 자유 주제 — README (주제 확정 대기)
+├── project2/                 # 프로젝트 2 자유 주제 — README
 ├── n8n-runtime/              # 로컬 n8n (gitignore · README 없음)
 └── n8n-local/                # 로컬 실험 (gitignore · README 없음)
 ```
@@ -187,9 +187,9 @@ Codyssey_3_ProJect/
 ## 9. 참고 파일
 
 - `report/프로젝트1_자동화_도구_비교_분석_보고서.md` — 프로젝트1 비교 분석 보고서
-- `make_gif/` — Make·n8n 실동작 GIF (영문 별칭, 보고서 링크 대상)
-- `n8n_gif/` — n8n 녹화 원본 + 내용 기준 매핑 안내
-- `png/` — n8n 설치·OAuth 마찰 이미지
+- `make/make_gif/` — Make·n8n 실동작 GIF (영문 별칭, 보고서 링크 대상)
+- `n8n/n8n_gif/` — n8n 녹화 원본 + 내용 기준 매핑 안내
+- `n8n/n8n_png/` — n8n 설치·OAuth 마찰 이미지
 - `n8n/` — n8n 최종 워크플로·설계·README
 - `make/` — Make blueprint·캡처·README
 - `create_google_form_Project_1.js` — 프로젝트1 폼/결과 시트 생성 Apps Script
