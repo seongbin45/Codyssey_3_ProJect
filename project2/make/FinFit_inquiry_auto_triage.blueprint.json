@@ -1077,7 +1077,7 @@
                   "5": "{{1.`2`}}"
                 },
                 "sheetId": "긴급 문의",
-                "spreadsheetId": "/***INQUIRY_RESULT_SHEET_ID***",
+                "spreadsheetId": "***INQUIRY_RESULT_SHEET_ID***",
                 "includesHeaders": true,
                 "insertDataOption": "INSERT_ROWS",
                 "useColumnHeaders": false,
@@ -1493,7 +1493,7 @@
                   "5": "{{1.`2`}}"
                 },
                 "sheetId": "일반 문의",
-                "spreadsheetId": "/***INQUIRY_RESULT_SHEET_ID***",
+                "spreadsheetId": "***INQUIRY_RESULT_SHEET_ID***",
                 "includesHeaders": true,
                 "insertDataOption": "INSERT_ROWS",
                 "useColumnHeaders": false,

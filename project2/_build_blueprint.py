@@ -83,7 +83,8 @@ def main() -> None:
                 "5": "{{1.`2`}}",
             },
             "sheetId": sheet_name,
-            "spreadsheetId": "/***INQUIRY_RESULT_SHEET_ID***",
+            # Make UI: bare spreadsheet ID only (leading/trailing slashes can 404)
+            "spreadsheetId": "***INQUIRY_RESULT_SHEET_ID***",
             "includesHeaders": True,
             "insertDataOption": "INSERT_ROWS",
             "useColumnHeaders": False,
