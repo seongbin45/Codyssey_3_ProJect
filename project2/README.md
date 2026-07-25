@@ -108,8 +108,8 @@ project2/
 
 1. [x] 주제·도구 확정 + `design.md`  
 2. [x] Make Import용 Blueprint — `make/FinFit_inquiry_auto_triage.blueprint.json`  
-3. [ ] Google 문의 폼 + 결과 시트 탭「긴급 문의」「일반 문의」 준비  
-4. [ ] Make에서 Blueprint **Import** → Connection/시트/알림 이메일 재매핑 (`make/README.md`)  
+3. [x] Google 문의 폼 + 결과 시트 탭「긴급 문의」「일반 문의」 (Apps Script 로그 완료 · ID는 `make/local_ids.json` 로컬)  
+4. [ ] Make에서 **`*.LOCAL.blueprint.json` Import** → Connection + Email To (`make/README.md`)  
 5. [ ] 테스트 2건 실행 · 캡처 · 체크리스트 4–5 닫기
 
 ---

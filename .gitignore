@@ -17,6 +17,11 @@ client_secret*.json
 .env
 .env.*
 
+# Local resource IDs / prefilled blueprints (do not commit real sheet/form IDs)
+project2/make/local_ids.json
+project2/make/*.LOCAL.blueprint.json
+project2/make/*.LOCAL.json
+
 # OS / editor
 .DS_Store
 Thumbs.db
