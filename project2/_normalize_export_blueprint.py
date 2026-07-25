@@ -49,13 +49,30 @@ def fix_runtime(j: dict) -> dict:
             if isinstance(sid, str):
                 bag["spreadsheetId"] = sid.strip().strip("/")
 
-        # Slack: ensure message body exists
+        # Slack: team channel (public/private), not DM/slackbot
         if n.get("module") == "slack:CreateMessage":
-            if not mapper.get("text"):
-                mapper["text"] = SLACK_TEXT
-            # Prefer public channel select if user re-maps; keep channel if set
-            mapper.setdefault("mrkdwn", True)
+            mapper["text"] = mapper.get("text") or SLACK_TEXT
+            mapper["mrkdwn"] = True
+            mapper["channelWType"] = "list"
+            mapper["idType"] = "channel"
+            # public | private — not im (DM)
+            ct = mapper.get("channelType")
+            if ct in (None, "im", "mpim"):
+                mapper["channelType"] = "public"
+            # Drop DM channel IDs (D…) so Make forces re-select of C…/G… team channel
+            ch = mapper.get("channel")
+            if isinstance(ch, str) and (ch.startswith("D") or ch.startswith("***")):
+                mapper["channel"] = "***SLACK_TEAM_CHANNEL_ID***"
             n["mapper"] = mapper
+            # restore labels for designer
+            restore = n.setdefault("metadata", {}).setdefault("restore", {})
+            expect = restore.setdefault("expect", {})
+            expect["channelType"] = {"label": "Public channel"}
+            expect["channel"] = {
+                "mode": "chose",
+                "label": "Import 후 팀 채널 선택 (공개 또는 비공개)",
+            }
+            expect["idType"] = {"mode": "chose", "label": "Channel ID"}
 
         # Sheets values: ensure 6 columns mapped with expressions (not hardcoded)
         if n.get("module") == "google-sheets:addRow":
@@ -99,7 +116,12 @@ def mask_for_public(j: dict) -> dict:
     raw = raw.replace(RESPONSE_ID, "***INQUIRY_RESPONSE_SHEET_ID***")
     raw = raw.replace(RESULT_ID, "***INQUIRY_RESULT_SHEET_ID***")
     # Slack channel IDs (DM/channel)
-    raw = re.sub(r'"channel"\s*:\s*"[CDG][A-Z0-9]{8,}"', '"channel": "***SLACK_CHANNEL_ID***"', raw)
+    raw = re.sub(
+        r'"channel"\s*:\s*"[CDG][A-Z0-9]{8,}"',
+        '"channel": "***SLACK_TEAM_CHANNEL_ID***"',
+        raw,
+    )
+    raw = raw.replace("***SLACK_CHANNEL_ID***", "***SLACK_TEAM_CHANNEL_ID***")
     # connection numeric ids → leave or zero; Make re-binds on import
     raw = re.sub(
         r'choiseongbin45@gmail\.com',

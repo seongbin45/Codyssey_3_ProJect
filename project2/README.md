@@ -114,7 +114,7 @@ project2/
 4. [x] Make 연결 재매핑 (Google / OpenAI / Slack)  
 5. [x] **긴급 분기** 테스트 — Slack 메시지 전송 성공 (예: 커피 수혈 요청)  
 6. [ ] **일반 분기** 1회 + 실행 로그·시트·캔버스 캡처 제출용 정리  
-7. [ ] (선택) Slack 채널을 slackbot DM → 팀 채널로 변경
+7. [ ] Slack **팀 채널**(공개/비공개)로 변경 — Blueprint는 `public` 기본, Make에서 채널 재선택
 
 ---
 

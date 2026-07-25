@@ -1406,9 +1406,9 @@
                 "channelWType": "list",
                 "parse": false,
                 "mrkdwn": true,
-                "channelType": "im",
+                "channelType": "public",
                 "idType": "channel",
-                "channel": "***SLACK_CHANNEL_ID***",
+                "channel": "***SLACK_TEAM_CHANNEL_ID***",
                 "text": "*[FinFit 긴급 문의]* {{2.result.category}}\n요약: {{2.result.summary}}\n긴급도: {{2.result.urgency}}\n원문: {{1.`1`}}\n접수: {{1.`0`}}\n연락처: {{1.`2`}}"
               },
               "metadata": {
@@ -1449,7 +1449,7 @@
                       "mode": "chose"
                     },
                     "channelType": {
-                      "label": "Direct message"
+                      "label": "Public channel (or switch to Private)"
                     },
                     "idType": {
                       "mode": "chose",
@@ -1457,7 +1457,7 @@
                     },
                     "channel": {
                       "mode": "chose",
-                      "label": "slackbot"
+                      "label": "팀 채널 선택 (공개/비공개)"
                     }
                   }
                 },
@@ -1958,7 +1958,7 @@
     "notes": [
       {
         "moduleId": null,
-        "content": "project2 FinFit 문의 자동 분류 (export 정리본). Import 후: (1) Google 연결+응답시트 탭 (Form Responses 1 또는 양식 응답 1) (2) 결과시트 긴급/일반 문의 탭 — spreadsheetId는 슬래시 없이 ID만 (3) OpenAI (4) Slack 채널+연결. 긴급 분기 Slack 본문은 text 필드에 매핑됨."
+        "content": "project2 FinFit 문의 자동 분류 (export 정리본). Import 후: (1) Google 연결+응답시트 탭 (Form Responses 1 또는 양식 응답 1) (2) 결과시트 긴급/일반 문의 탭 — spreadsheetId는 슬래시 없이 ID만 (3) OpenAI (4) Slack 채널+연결. 긴급 분기 Slack 본문은 text 필드에 매핑됨. 긴급 알림: Slack 팀 채널(public/private). channelType=im(DM) 사용 금지. Import 후 Slack 모듈에서 공개 또는 비공개 팀 채널을 다시 선택."
       }
     ]
   }
