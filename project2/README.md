@@ -21,9 +21,9 @@ Codyssey 미션 **[프로젝트 2] 자유 주제 자동화 설계 및 구현**.
 | 1 | 자동화할 **반복 업무 1개** 정의 | ✅ 문의/피드백 긴급 분류 (`design.md` §1) |
 | 2 | **도구 1개** 선정 + 선정 이유 | ✅ Make — 상시 클라우드 (`design.md` §2) |
 | 3 | 워크플로우 **설계 문서** (설명 또는 다이어그램) | ✅ `design.md` |
-| 4 | **구현 화면** 캡처 | ⬜ Make Import·연동 후 캡처 |
-| 5 | **실행 결과** 캡처 (분기별 1회 이상) | ⬜ 긴급/일반 테스트 케이스 |
-| 6 | 실제 동작 워크플로우 (Export/Blueprint 등) | ✅ `make/FinFit_inquiry_auto_triage.blueprint.json` (Import용 · 연결 재매핑 필요) |
+| 4 | **구현 화면** 캡처 | ⬜ Make 캔버스 스크린샷 (선택 시 `captures/` 정리) |
+| 5 | **실행 결과** 캡처 (분기별 1회 이상) | 🔄 긴급 분기 동작 확인됨 (Slack 성공 로그) · 일반 분기·캡처 정리 남음 |
+| 6 | 실제 동작 워크플로우 (Export/Blueprint 등) | ✅ LOCAL Blueprint 실동작 확인 · 공개용은 마스킹본 |
 
 ### 공통 기능 요구 (프로젝트 1과 동일 코어)
 
@@ -109,10 +109,12 @@ project2/
 ## 6. 다음 액션
 
 1. [x] 주제·도구 확정 + `design.md`  
-2. [x] Make Import용 Blueprint — `make/FinFit_inquiry_auto_triage.blueprint.json`  
-3. [x] Google 문의 폼 + 결과 시트 탭「긴급 문의」「일반 문의」 (Apps Script 로그 완료 · ID는 `make/local_ids.json` 로컬)  
-4. [ ] Make에서 **`*.LOCAL.blueprint.json` Import** → Connection + Email To (`make/README.md`)  
-5. [ ] 테스트 2건 실행 · 캡처 · 체크리스트 4–5 닫기
+2. [x] Make Import용 Blueprint — `make/…LOCAL.blueprint.json` **실동작 확인** (공개본은 마스킹)  
+3. [x] Google 문의 폼 + 결과 시트 탭「긴급 문의」「일반 문의」  
+4. [x] Make 연결 재매핑 (Google / OpenAI / Slack)  
+5. [x] **긴급 분기** 테스트 — Slack 메시지 전송 성공 (예: 커피 수혈 요청)  
+6. [ ] **일반 분기** 1회 + 실행 로그·시트·캔버스 캡처 제출용 정리  
+7. [ ] (선택) Slack 채널을 slackbot DM → 팀 채널로 변경
 
 ---
 
