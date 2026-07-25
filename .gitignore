@@ -1,8 +1,6 @@
-# Local n8n installs (large node_modules) — README만 추적
-n8n-runtime/**
-!n8n-runtime/README.md
-n8n-local/**
-!n8n-local/README.md
+# Local n8n installs (large node_modules) — 커밋 제외, README도 두지 않음
+n8n-runtime/
+n8n-local/
 **/node_modules/
 
 # Local AI / tool dumps

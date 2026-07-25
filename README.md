@@ -3,7 +3,8 @@
 > Codyssey "AI 도구 학습" 커리큘럼 — 노코드 자동화 기초: 워크플로우 설계 미션  
 > 프로젝트1: 동일 워크플로우를 **도구 A(Make.com) + 도구 B(n8n)** 로 구현·비교. 비교 분석 보고서·프로젝트2는 별도.  
 > **작업 규칙:** 이 저장소에서 수정이 생기면 **GitHub(`origin/main`)에 먼저 커밋·푸시**한다.  
-> **폴더 규칙:** 산출물 폴더를 만들거나 파일을 추가·이동하면 **그 폴더에 `README.md`를 두고**, 포함 파일·역할·관련 경로를 **상세히** 적는다 (앞으로 항상).
+> **폴더 규칙:** **Git에 커밋하는 산출물 폴더**마다 `README.md`를 두고 포함 파일·역할을 적는다.  
+> **`.gitignore`로 커밋 제외하는 폴더**(예: `n8n-runtime/`, `n8n-local/`)에는 **README를 만들지 않는다.**
 
 ---
 
@@ -170,18 +171,18 @@ Codyssey_3_ProJect/
 ├── report/                   # 비교 분석 보고서 — README
 ├── other/                    # 사전 조사 (본문=README) — README
 ├── project2/                 # 프로젝트 2 자유 주제 — README (주제 확정 대기)
-├── n8n-runtime/              # 로컬 n8n (gitignore) — README 안내만
-└── n8n-local/                # 로컬 실험 (gitignore) — README 안내만
+├── n8n-runtime/              # 로컬 n8n (gitignore · README 없음)
+└── n8n-local/                # 로컬 실험 (gitignore · README 없음)
 ```
 
 ### 폴더 README 규칙 (항상)
 
 | 규칙 | 설명 |
 |------|------|
-| 필수 | 산출물 폴더마다 `README.md` |
+| 필수 | **커밋 대상** 산출물 폴더마다 `README.md` |
 | 내용 | 폴더 목적, **파일별 설명 표**, 명명/매핑, 관련 경로, 유지 시 주의 |
 | 갱신 | 파일 추가·이름 변경·이동 시 **같은 커밋에서** README도 수정 |
-| 예외 | `node_modules/` 내부 제외. gitignore 런타임 폴더는 용도 안내 README만 |
+| 하지 않음 | **`.gitignore` 커밋 제외 폴더**에는 README를 만들지 않는다 (`n8n-runtime/`, `n8n-local/`, `node_modules/` 등). 안내는 상위 커밋 문서(`n8n/README.md` 등)에 적는다. |
 
 ## 9. 참고 파일
 
