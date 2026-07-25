@@ -21,9 +21,9 @@ Codyssey 미션 **[프로젝트 2] 자유 주제 자동화 설계 및 구현**.
 | 1 | 자동화할 **반복 업무 1개** 정의 | ✅ 문의/피드백 긴급 분류 (`design.md` §1) |
 | 2 | **도구 1개** 선정 + 선정 이유 | ✅ Make — 상시 클라우드 (`design.md` §2) |
 | 3 | 워크플로우 **설계 문서** (설명 또는 다이어그램) | ✅ `design.md` |
-| 4 | **구현 화면** 캡처 | ⬜ Make 시나리오 조립 후 |
+| 4 | **구현 화면** 캡처 | ⬜ Make Import·연동 후 캡처 |
 | 5 | **실행 결과** 캡처 (분기별 1회 이상) | ⬜ 긴급/일반 테스트 케이스 |
-| 6 | 실제 동작 워크플로우 (Export/Blueprint 등) | ⬜ `make/` Blueprint 예정 |
+| 6 | 실제 동작 워크플로우 (Export/Blueprint 등) | ✅ `make/FinFit_inquiry_auto_triage.blueprint.json` (Import용 · 연결 재매핑 필요) |
 
 ### 공통 기능 요구 (프로젝트 1과 동일 코어)
 
@@ -85,6 +85,9 @@ project2/
 |------|------|
 | `README.md` | 진행 상태·체크리스트·규칙 |
 | `design.md` | 업무 정의, Make 선정 이유, 2-way 구조, JSON 스키마, 테스트 케이스 |
+| `make/FinFit_inquiry_auto_triage.blueprint.json` | **Make 바로 Import** 용 Blueprint |
+| `make/README.md` | Import 절차·시트 헤더·재매핑 안내 |
+| `_build_blueprint.py` | Blueprint 재생성 스크립트 |
 
 파일·하위 폴더를 추가할 때마다 **해당 폴더 README** 또는 본 README 표를 갱신한다.
 
@@ -104,10 +107,10 @@ project2/
 ## 6. 다음 액션
 
 1. [x] 주제·도구 확정 + `design.md`  
-2. [ ] Google 문의 폼 + 결과 시트(탭: 전체 또는 긴급/일반) 준비  
-3. [ ] Make 시나리오: Forms/Sheets Watch → OpenAI → Router → Sheets (+ 긴급 알림)  
-4. [ ] 테스트 케이스 2건 실행 · 캡처/GIF · Blueprint export → `make/`  
-5. [ ] README 체크리스트 4–6 닫기
+2. [x] Make Import용 Blueprint — `make/FinFit_inquiry_auto_triage.blueprint.json`  
+3. [ ] Google 문의 폼 + 결과 시트 탭「긴급 문의」「일반 문의」 준비  
+4. [ ] Make에서 Blueprint **Import** → Connection/시트/알림 이메일 재매핑 (`make/README.md`)  
+5. [ ] 테스트 2건 실행 · 캡처 · 체크리스트 4–5 닫기
 
 ---
 
