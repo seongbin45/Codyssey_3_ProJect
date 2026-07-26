@@ -54,10 +54,11 @@
 - 보너스1 (AI 연동 Action) ✅  
 - 보너스2 (실패 알림/재시도) — **미구현**
 
-**도구 B (n8n)** — 동일 구조 목표, 구현 전  
+**도구 B (n8n)** — 동일 구조 구현 완료  
 - Trigger: Google Sheets (응답 시트 새 행)  
-- 분기: Switch (또는 IF) 3-way  
-- 설치: 로컬 `npx n8n` (Docker 미설치, Node v25 확인됨)
+- 분기: Switch/Router 3-way  
+- 설치·기동: 로컬 `n8n-runtime` + `npx n8n` → **http://localhost:5678** (Docker 미사용, n8n **2.31.5**)  
+- **실행 방법(실측):** `n8n/README.md` 「로컬 실행 방법」·보고서 §3.2 항목 2
 
 ---
 
