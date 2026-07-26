@@ -44,13 +44,13 @@ Zapier Free는 “단계 수 제한” 때문에 이 구조를 못 만들어서 
 
 ```text
 ① 이 문서 1~4절          → 무엇을 했는지·흐름이 뭔지
-② report/…보고서.md     → 비교·장단점·증거(GIF) formal 제출물
+② report/프로젝트1_…보고서.md → 비교·장단점·증거(GIF) 제출 본문
 ③ make/ · n8n/ README    → 도구별로 파일이 뭐가 있는지
 ④ gif/ · n8n/n8n_png/    → 화면 녹화·설치 마찰 이미지
 ⑤ project2/             → 자유 주제 (별개 과제)
 ```
 
-**채점·리뷰만 할 때:** `report/…보고서.md` 와 `gif/` 를 보면 됩니다. (폼을 다시 만들 필요 없음)
+**채점·리뷰만 할 때:** `report/프로젝트1_자동화_도구_비교_분석_보고서.md` 와 `gif/` 를 보면 됩니다. (폼을 다시 만들 필요 없음)
 
 **본인 계정으로 시나리오를 다시 돌릴 때:**  
 반드시 **폼·시트 생성(§6.2) → Make/n8n Import·연결(§6.3~6.4)** 순서.  
@@ -105,7 +105,8 @@ Zapier Free는 “단계 수 제한” 때문에 이 구조를 못 만들어서 
 - **summary**: 짧은 요약  
 - **Classification**: 분류 가능 / 분류불가 (정상 0원 지출과 파싱 실패를 구분)
 
-전문 시스템 프롬프트·분기 표는 예전에 루트에 길게 두었던 내용을 **보고서·워크플로 JSON**에 최종 반영해 두었습니다. 재현 시 워크플로 파일·`n8n/n8n_워크플로우_설계.md` 를 보면 됩니다.
+시스템 프롬프트 전문·세부 분기 표는 비교 보고서와 워크플로 파일에 있습니다.  
+더 보려면: `report/프로젝트1_자동화_도구_비교_분석_보고서.md`, `n8n/n8n_지출_메모_자동_분류.workflow.json`, `n8n/n8n_워크플로우_설계.md`.
 
 ---
 
@@ -179,7 +180,7 @@ Codyssey_3_ProJect/
 (폼을 다시 만들 필요 없음 — 이미 찍어 둔 증거만 봄)
 
 1. 이 README 1~4절  
-2. [`report/…보고서.md`](./report/프로젝트1_자동화_도구_비교_분석_보고서.md)  
+2. [`report/프로젝트1_자동화_도구_비교_분석_보고서.md`](./report/프로젝트1_자동화_도구_비교_분석_보고서.md)  
 3. [`gif/`](./gif/) 의 Make·n8n GIF  
 
 → 제출 증거·비교 논지를 이해하기에 충분합니다.
@@ -210,7 +211,8 @@ Codyssey_3_ProJect/
 **전제:** §6.2 로 폼·응답 시트·결과 시트가 준비되어 있어야 함.
 
 1. [Make.com](https://www.make.com) 가입·로그인  
-2. Scenario → **Import Blueprint** → `make/` 의 blueprint JSON  
+2. Scenario → **Import Blueprint** → `make/Integration Google Forms, OpenAI (ChatGPT).blueprint.json`  
+
 3. Google·OpenAI **연결(Connection)** 을 본인 계정으로 다시 연결  
 4. 모듈마다 Spreadsheet/Sheet 를 **§6.2에서 만든 본인 시트**로 지정 (placeholder ID 그대로 두면 404)  
 5. 시나리오 ON / Run once 후 **폼에 테스트 제출**  
@@ -273,7 +275,7 @@ GIF·스크린샷에도 가능하면 이메일·전체 시트 ID를 가립니다
 |--------|------|------|
 | Make 워크플로 | ✅ | `make/*.blueprint.json`, 캡처 |
 | n8n 워크플로 | ✅ | `n8n/*.workflow.json` |
-| 비교 보고서 | ✅ 제출본 | `report/…보고서.md` |
+| 비교 보고서 | ✅ 제출본 | `report/프로젝트1_자동화_도구_비교_분석_보고서.md` |
 | 실행 GIF (분기×도구) | ✅ | `gif/` |
 | n8n 설치 마찰 이미지 | ✅ | `n8n/n8n_png/` |
 | 보너스1 AI 연동 | ✅ (OpenAI 파싱) | — |
@@ -301,6 +303,12 @@ A. 아닙니다. `n8n-runtime` 은 Git에 없어서, 본인 PC에 Node로 설치
 **Q. Make와 n8n 트리거 이름이 다른데 같은 건가?**  
 A. 둘 다 **폼 응답이 쌓이는 스프레드시트의 새 행**을 감시합니다. n8n에는 Forms 전용 트리거가 없어 Sheets Trigger로 표기됩니다.
 
+**Q. 응답 시트와 결과 시트가 뭐가 다른가?**  
+A. **응답 시트** = 폼이 자동으로 쌓는 원본 로그(Trigger가 감시). **결과 시트** = 자동화가 분류 후 쓰는 탭 3개(고액/일반/검토). 둘은 다른 스프레드시트 파일입니다.
+
+**Q. OpenAI 키는 어디에?**  
+A. 레포에 없습니다. Make Connection / n8n Credentials에 본인 API 키를 넣습니다. 키가 없으면 AI 단계가 실패합니다.
+
 **Q. 폴더마다 README가 있는 이유?**  
 A. 그 폴더만 열어도 “이게 뭔 파일인지” 알 수 있게 하기 위함입니다. **gitignore 폴더에는 README를 두지 않습니다.**
 
@@ -319,7 +327,7 @@ A. 그 폴더만 열어도 “이게 뭔 파일인지” 알 수 있게 하기 �
 | 문서 | 내용 |
 |------|------|
 | [`미션.txt`](./미션.txt) | 공식 요구·보너스·제약 |
-| [`report/프로젝트1_…보고서.md`](./report/프로젝트1_자동화_도구_비교_분석_보고서.md) | 비교 표, 장단점, GIF 증거 |
+| [`report/프로젝트1_자동화_도구_비교_분석_보고서.md`](./report/프로젝트1_자동화_도구_비교_분석_보고서.md) | 비교 표, 장단점, GIF 증거 |
 | [`n8n/README.md`](./n8n/README.md) | n8n 실행·Import·경고 로그 해석 |
 | [`make/README.md`](./make/README.md) | Make Blueprint Import |
 | [`project2/README.md`](./project2/README.md) | 자유 주제 현황 |
