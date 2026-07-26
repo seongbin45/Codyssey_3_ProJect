@@ -59,15 +59,127 @@ Google Sheets Trigger1 (응답 시트 rowAdded)
 런타임 폴더 `n8n-runtime/` 은 용량이 커서 **gitignore** 이며, 그 안에는 README를 두지 않는다.  
 설치·오류 해결 기록의 원문 로그는 `n8n_워크플로우_설계.md` · 시각 자료는 `n8n_png/` 를 본다.
 
-### A. 한눈에 보는 권장 순서
+---
+
+### ⚠ 중요: Visual Studio 2022만으로는 부족했다
+
+| 오해 | 실제 (본 과제 실측) |
+|------|---------------------|
+| “VS 2022를 깔면 C++ 빌드가 된다” | **기본 설치만으로는** n8n 의존성(`isolated-vm`) 빌드에 필요한 **SDK·툴체인 구성 요소가 빠질 수 있다** |
+| “VS Installer에서 Community를 설치했다” | **`--custom --add …` 로 SDK + VC Tools를 명시**하지 않으면 `gyp ERR! missing any Windows SDK` 가 난다 |
+| “SDK까지 넣었으니 npm install 만 하면 된다” | n8n이 끌어오는 **node-gyp 8.x** 가 Windows 11 SDK 패키지 ID를 못 알아볼 수 있음 → **node-gyp 11 + 수동 rebuild** 가 추가로 필요했다 |
+
+**다른 PC에서도 같은 패턴일 가능성이 높다.**  
+아래 **필수 명령어 블록**을 순서대로 실행하는 것을 권장한다. (상세 설명은 B절 이하)
+
+---
+
+### ★ 필수 명령어 치트시트 (문제 해결에 필요했던 것)
+
+> PowerShell에서 실행. 경로는 본인 클론 위치에 맞게 바꾼다.  
+> **관리자 PowerShell** 이 안전할 때가 많다 (winget / 전역 npm).
+
+#### ① Node.js (없으면 먼저)
+
+- 설치: [https://nodejs.org](https://nodejs.org) **LTS** (실측: Node 25도 가능, engines는 ≥ 22)  
+- 확인:
+
+```powershell
+node -v
+npm -v
+```
+
+#### ② Visual Studio 2022 Community + **필수 구성 요소** (실측 명령)
+
+> VS “껍데기”만 깔면 안 된다. **SDK + VC Tools 를 같이** 넣는다.
+
+```powershell
+winget install --id Microsoft.VisualStudio.2022.Community --exact --force --custom "--add Microsoft.VisualStudio.Component.Windows11SDK.22621 --add Microsoft.VisualStudio.Component.VC.Tools.x86.x64 --add Microsoft.VisualStudio.Component.VC.Tools.ARM64" --source winget
+```
+
+| 반드시 같이 넣는 구성 요소 | 역할 |
+|---------------------------|------|
+| `Windows11SDK.22621` | Windows 헤더/라이브러리 (없으면 **missing any Windows SDK**) |
+| `VC.Tools.x86.x64` | MSVC C++ 컴파일러 (x64 빌드) |
+| `VC.Tools.ARM64` | MSVC ARM64 툴 (환경에 따라 선택) |
+
+#### ③ (여전히 SDK 오류면) Windows SDK 키트 추가
+
+```powershell
+winget install --id Microsoft.WindowsSDK.10.0.26100 -e
+```
+
+#### ④ **node-gyp 11** (VS·SDK 설치 후에도 거의 필수)
+
+> 여기가 두 번째 함정. SDK가 있어도 **node-gyp 8** 이 “SDK 없음”으로 보고 빌드를 끊는다.
+
+```powershell
+npm install -g node-gyp@11.2.0
+node-gyp -v
+# → 11.x 여야 함
+```
+
+#### ⑤ n8n 설치 (전용 폴더)
+
+```powershell
+cd C:\Users\seong\Downloads\Codyssey_3_ProJect
+mkdir n8n-runtime -Force
+cd n8n-runtime
+if (-not (Test-Path package.json)) { npm init -y }
+
+# 자동 빌드가 깨지는 경우가 많아 ignore-scripts 후 수동 재빌드 권장
+npm install n8n@2.31.5 --no-fund --no-audit --ignore-scripts
+```
+
+#### ⑥ 네이티브 모듈 **수동 재빌드** (isolated-vm 등)
+
+```powershell
+cd C:\Users\seong\Downloads\Codyssey_3_ProJect\n8n-runtime
+
+# 오류 로그에 나온 패키지 폴더로 이동 후 (예: isolated-vm)
+cd node_modules\isolated-vm
+node-gyp rebuild
+cd ..\..
+
+# sqlite3 등도 동일하게
+# cd node_modules\sqlite3
+# node-gyp rebuild
+# cd ..\..
+```
+
+실측에서 기동에 중요했던 예: **`isolated-vm`**, **`sqlite3`** (성공).  
+일부 선택 패키지 실패는 기동에 지장 없을 수 있음.
+
+#### ⑦ 기동
+
+```powershell
+cd C:\Users\seong\Downloads\Codyssey_3_ProJect\n8n-runtime
+npx n8n
+# 브라우저: http://localhost:5678
+```
+
+#### 한 줄 요약
+
+| 단계 | 없으면 생기는 일 |
+|------|------------------|
+| VS + **SDK + VC Tools** (②) | `missing any Windows SDK` / isolated-vm 빌드 실패 |
+| **SDK 키트 추가** (③, 필요 시) | 여전히 SDK 경로·인식 문제 |
+| **node-gyp 11** (④) | SDK 깔아도 node-gyp 8 이 SDK를 못 봄 |
+| **node-gyp rebuild** (⑥) | `--ignore-scripts` 설치 후 네이티브 모듈 미빌드 상태 |
+
+시각 요약: `n8n_png/n8n_friction_01_*.png` (SDK 부재) · `n8n_friction_02_*.png` (SDK + gyp11 재빌드).
+
+---
+
+### A. 한눈에 보는 권장 순서 (위 치트시트와 동일)
 
 ```text
-1) Node.js 설치 (LTS, n8n engines: node >= 22 권장 · 실측 Node 25 사용)
-2) winget 으로 Visual Studio 2022 Community + VC Tools + Windows11SDK.22621  (아래 D-1 실측 명령)
-3) (필요 시) Windows SDK 10.0.26100 추가  ← 여전히 SDK 오류일 때
-4) 전역 node-gyp 11 설치  ← 구형 node-gyp 8 이 SDK 패키지를 못 찾는 함정 해소
-5) 저장소에 n8n-runtime 폴더 만들고 n8n@2.31.5 설치
-6) 네이티브 모듈(isolated-vm, sqlite3 등) 재빌드 확인
+1) Node.js 설치 (LTS · engines node >= 22 · 실측 Node 25)
+2) winget VS 2022 Community + Windows11SDK.22621 + VC Tools   ← VS만 설치 ❌
+3) (필요 시) WindowsSDK.10.0.26100 추가
+4) npm i -g node-gyp@11                                     ← SDK 설치 후에도 필수에 가깝다
+5) n8n-runtime 에 n8n@2.31.5 설치 (--ignore-scripts 권장)
+6) isolated-vm / sqlite3 등 node-gyp rebuild
 7) npx n8n → http://localhost:5678
 8) owner 가입 → Credentials → 워크플로 Import
 ```
@@ -99,16 +211,17 @@ npm error gyp ERR! find VS - missing any Windows SDK
 |------|------|
 | 언제 | `npm install n8n` / `npx n8n` 최초 설치 시 |
 | 왜 | n8n 의존성 **`isolated-vm`** 이 C++ **네이티브 모듈 컴파일**을 요구함 |
-| 함정 | Visual Studio 2022 가 있어도 **Windows SDK** 가 없으면 동일 오류 |
+| 함정 | **VS 2022를 깔아도** SDK·VC Tools 구성 요소가 빠지면 **동일 오류**. “VS 있음 = 빌드 가능”이 아님 |
+| 해결 명령 | 위 **★ 치트시트 ②** (필요 시 **③**) |
 | 증거 이미지 | `n8n_png/n8n_friction_01_windows_sdk_missing.png` |
 
-#### 오류 2 — SDK 설치 후에도 같은 메시지 (node-gyp 버전)
+#### 오류 2 — SDK·VS 준비 후에도 같은 메시지 (node-gyp 버전)
 
 | 항목 | 내용 |
 |------|------|
-| 언제 | Windows SDK 10.0.26100 설치 **이후** 재시도 |
-| 왜 | 당시 n8n 의존 트리가 끌어오는 **node-gyp 8.4.1** 은 VS 패키지 ID `Windows10SDK.*` 위주만 인식. `Windows11SDK.22621` 등은 *missing any Windows SDK* 로 무시할 수 있음 |
-| 해결 | 전역 **node-gyp@11** 설치 후, 네이티브 모듈을 **node-gyp 11 로 수동 재빌드** |
+| 언제 | VS + Windows11SDK.22621 / WindowsSDK 10.0.26100 설치 **이후** 재시도 |
+| 왜 | n8n 의존 트리가 끌어오는 **node-gyp 8.4.1** 은 VS 패키지 ID `Windows10SDK.*` 위주만 인식. `Windows11SDK.22621` 등은 *missing any Windows SDK* 로 무시할 수 있음 |
+| 해결 명령 | 위 **★ 치트시트 ④ + ⑥** (`node-gyp@11` + `node-gyp rebuild`) |
 | 증거 이미지 | `n8n_png/n8n_friction_02_sdk_and_nodegyp_fix.png` |
 
 #### 기타 (설치 중 부수적으로 나올 수 있음)
