@@ -1,4 +1,4 @@
-# Codyssey 노코드 자동화 — 지출 분류 & 문의 분류 저장소
+# Codyssey 노코드 자동화 — 지출 분류 & 문의 분류
 
 이 저장소는 **코드를 거의 쓰지 않고** 반복 업무를 자동화하는 과제(미션)의 결과물입니다.  
 채점자·동료·나중에 다시 여는 본인까지, **배경 지식 없이** 이 문서만으로 전체 그림을 잡을 수 있게 썼습니다.
@@ -44,13 +44,13 @@ Zapier Free는 “단계 수 제한” 때문에 이 구조를 못 만들어서 
 
 ```text
 ① 이 문서 1~4절          → 무엇을 했는지·흐름이 뭔지
-② report/프로젝트1_…보고서.md → 비교·장단점·증거(GIF) 제출 본문
-③ make/ · n8n/ README    → 도구별로 파일이 뭐가 있는지
-④ gif/ · n8n/n8n_png/    → 화면 녹화·설치 마찰 이미지
+② project1/report/프로젝트1_…보고서.md → 비교·장단점·증거(GIF) 제출 본문
+③ project1/make/ · project1/n8n/ README    → 도구별로 파일이 뭐가 있는지
+④ project1/gif/ · project1/n8n/n8n_png/    → 화면 녹화·설치 마찰 이미지
 ⑤ project2/             → 자유 주제 (별개 과제)
 ```
 
-**채점·리뷰만 할 때:** `report/프로젝트1_자동화_도구_비교_분석_보고서.md` 와 `gif/` 를 보면 됩니다. (폼을 다시 만들 필요 없음)
+**채점·리뷰만 할 때:** `project1/report/프로젝트1_자동화_도구_비교_분석_보고서.md` 와 `project1/gif/` 를 보면 됩니다. (폼을 다시 만들 필요 없음)
 
 **본인 계정으로 시나리오를 다시 돌릴 때:**  
 반드시 **폼·시트 생성(§6.2) → Make/n8n Import·연결(§6.3~6.4)** 순서.  
@@ -106,7 +106,7 @@ Zapier Free는 “단계 수 제한” 때문에 이 구조를 못 만들어서 
 - **Classification**: 분류 가능 / 분류불가 (정상 0원 지출과 파싱 실패를 구분)
 
 시스템 프롬프트 전문·세부 분기 표는 비교 보고서와 워크플로 파일에 있습니다.  
-더 보려면: `report/프로젝트1_자동화_도구_비교_분석_보고서.md`, `n8n/n8n_지출_메모_자동_분류.workflow.json`, `n8n/n8n_워크플로우_설계.md`.
+더 보려면: `project1/report/프로젝트1_자동화_도구_비교_분석_보고서.md`, `project1/n8n/n8n_지출_메모_자동_분류.workflow.json`, `project1/n8n/n8n_워크플로우_설계.md`.
 
 ---
 
@@ -114,37 +114,35 @@ Zapier Free는 “단계 수 제한” 때문에 이 구조를 못 만들어서 
 
 ```text
 Codyssey_3_ProJect/
-├── README.md                 ← 지금 읽는 문서 (전체 안내)
-├── 미션.txt                  ← 과제 요구사항 원문
-├── create_google_form_Project_1.js   ← 프로젝트1 폼·결과 시트 생성 (Apps Script)
+├── README.md                      ← 지금 읽는 문서 (저장소 전체 안내)
+├── 미션.txt                       ← 과제 요구사항 원문
+├── other/                         ← 도구 사전 조사 (Zapier/Make/n8n)
 │
-├── report/                   ← 프로젝트1 비교 분석 보고서 (제출 핵심)
-├── other/                    ← 도구 사전 조사 (Zapier/Make/n8n)
+├── project1/                      ← 프로젝트 1 전체 산출물
+│   ├── create_google_form_Project_1.js
+│   ├── report/                    ← 비교 분석 보고서 (제출 핵심)
+│   ├── make/                      ← 도구 A Make Blueprint·캡처
+│   ├── n8n/                       ← 도구 B 워크플로·설계·n8n_gif·n8n_png
+│   └── gif/                       ← 실행 GIF (Make 6 + n8n 6)
 │
-├── make/                     ← 도구 A (Make) Blueprint·캔버스 캡처
-├── n8n/                      ← 도구 B (n8n) 워크플로 JSON·설계·마찰 이미지
-│   ├── n8n_gif/              ← n8n 실행 녹화 원본(한글 파일명)
-│   └── n8n_png/              ← 설치·OAuth 마찰 스토리보드
-├── gif/                      ← 보고서용 실행 GIF (영문 이름, Make 6 + n8n 6)
+├── project2/                      ← 프로젝트 2 문의 분류 (Make)
 │
-├── project2/                 ← 프로젝트2 문의 분류 (Make)
-│
-├── n8n-runtime/              ← 로컬 n8n 설치 본체 (Git에 안 올림)
-└── n8n-local/                ← 로컬 실험용 (Git에 안 올림)
+├── n8n-runtime/                   ← 로컬 n8n 설치 본체 (Git에 안 올림)
+└── n8n-local/                     ← 로컬 실험용 (Git에 안 올림)
 ```
 
 | 보고 싶은 것 | 가는 곳 |
 |--------------|---------|
-| **비교 보고서 (글 + GIF 임베드)** | [`report/프로젝트1_자동화_도구_비교_분석_보고서.md`](./report/프로젝트1_자동화_도구_비교_분석_보고서.md) |
-| **Make 시나리오 가져오기** | [`make/`](./make/) 안 `.blueprint.json` · [`make/README.md`](./make/README.md) |
-| **n8n 워크플로 가져오기** | [`n8n/n8n_지출_메모_자동_분류.workflow.json`](./n8n/n8n_지출_메모_자동_분류.workflow.json) · [`n8n/README.md`](./n8n/README.md) |
-| **동작 화면 녹화** | [`gif/`](./gif/) (`make_*.gif`, `n8n_*.gif`) |
-| **n8n 설치가 왜 힘든지** | [`n8n/n8n_png/`](./n8n/n8n_png/) |
+| **비교 보고서 (글 + GIF 임베드)** | [`project1/report/프로젝트1_자동화_도구_비교_분석_보고서.md`](./project1/report/프로젝트1_자동화_도구_비교_분석_보고서.md) |
+| **Make 시나리오 가져오기** | [`project1/make/`](./project1/make/) 안 `.blueprint.json` · [`project1/make/README.md`](./project1/make/README.md) |
+| **n8n 워크플로 가져오기** | [`project1/n8n/n8n_지출_메모_자동_분류.workflow.json`](./project1/n8n/n8n_지출_메모_자동_분류.workflow.json) · [`project1/n8n/README.md`](./project1/n8n/README.md) |
+| **동작 화면 녹화** | [`project1/gif/`](./project1/gif/) (`make_*.gif`, `n8n_*.gif`) |
+| **n8n 설치가 왜 힘든지** | [`project1/n8n/n8n_png/`](./project1/n8n/n8n_png/) |
 | **프로젝트 2** | [`project2/README.md`](./project2/README.md) |
-| **폼·시트 만들기 (재현 시 1순위)** | `create_google_form_Project_1.js` → 그다음 Make/n8n (§6.2 선행) |
+| **폼·시트 만들기 (재현 시 1순위)** | `project1/create_google_form_Project_1.js` → 그다음 Make/n8n (§6.2 선행) |
 
 각 **커밋되는 폴더**에는 그 폴더 전용 `README.md`가 있습니다.  
-**Git에 올리지 않는 폴더**(`n8n-runtime/` 등)에는 README를 두지 않습니다. 실행 안내는 `n8n/README.md`에 있습니다.
+**Git에 올리지 않는 폴더**(`n8n-runtime/` 등)에는 README를 두지 않습니다. 실행 안내는 `project1/n8n/README.md`에 있습니다.
 
 ---
 
@@ -180,8 +178,8 @@ Codyssey_3_ProJect/
 (폼을 다시 만들 필요 없음 — 이미 찍어 둔 증거만 봄)
 
 1. 이 README 1~4절  
-2. [`report/프로젝트1_자동화_도구_비교_분석_보고서.md`](./report/프로젝트1_자동화_도구_비교_분석_보고서.md)  
-3. [`gif/`](./gif/) 의 Make·n8n GIF  
+2. [`project1/report/프로젝트1_자동화_도구_비교_분석_보고서.md`](./project1/report/프로젝트1_자동화_도구_비교_분석_보고서.md)  
+3. [`project1/gif/`](./project1/gif/) 의 Make·n8n GIF  
 
 → 제출 증거·비교 논지를 이해하기에 충분합니다.
 
@@ -192,7 +190,7 @@ Codyssey_3_ProJect/
 **프로젝트 1**
 
 1. [script.google.com](https://script.google.com) → 새 프로젝트  
-2. [`create_google_form_Project_1.js`](./create_google_form_Project_1.js) 전체 붙여넣기  
+2. [`project1/create_google_form_Project_1.js`](./project1/create_google_form_Project_1.js) 전체 붙여넣기  
 3. 함수 `createExpenseForm` 실행 (최초 1회 Google 권한 허용)  
 4. **실행 로그**에서 확인·보관할 것:  
    - 폼 편집 URL / 응답(공유) URL  
@@ -211,13 +209,13 @@ Codyssey_3_ProJect/
 **전제:** §6.2 로 폼·응답 시트·결과 시트가 준비되어 있어야 함.
 
 1. [Make.com](https://www.make.com) 가입·로그인  
-2. Scenario → **Import Blueprint** → `make/Integration Google Forms, OpenAI (ChatGPT).blueprint.json`  
+2. Scenario → **Import Blueprint** → `project1/make/Integration Google Forms, OpenAI (ChatGPT).blueprint.json`  
 
 3. Google·OpenAI **연결(Connection)** 을 본인 계정으로 다시 연결  
 4. 모듈마다 Spreadsheet/Sheet 를 **§6.2에서 만든 본인 시트**로 지정 (placeholder ID 그대로 두면 404)  
 5. 시나리오 ON / Run once 후 **폼에 테스트 제출**  
 
-세부: [`make/README.md`](./make/README.md)
+세부: [`project1/make/README.md`](./project1/make/README.md)
 
 ### 6.4 n8n 다시 돌리기 (도구 B) — 실측 명령
 
@@ -225,7 +223,7 @@ Codyssey_3_ProJect/
 
 1. **§6.2 폼·시트 완료**  
 2. Node.js 설치, `n8n-runtime` 에 n8n 패키지 설치 완료  
-   (설치 실패 시 Windows SDK·node-gyp → `n8n/n8n_png/`, `n8n/n8n_워크플로우_설계.md`)
+   (설치 실패 시 Windows SDK·node-gyp → `project1/n8n/n8n_png/`, `project1/n8n/n8n_워크플로우_설계.md`)
 
 n8n은 **내 PC에서 서버를 켠 뒤** 브라우저로 편집합니다.
 
@@ -243,13 +241,13 @@ npx n8n
 그다음:
 
 1. 브라우저 **http://localhost:5678**  
-2. 워크플로 JSON Import (`n8n/n8n_지출_메모_자동_분류.workflow.json`)  
+2. 워크플로 JSON Import (`project1/n8n/n8n_지출_메모_자동_분류.workflow.json`)  
 3. Google/OpenAI Credentials 연결  
 4. Trigger·Append 노드의 문서를 **§6.2에서 만든 시트**로 지정  
 5. Active ON → 폼 테스트 제출  
 
 Python runner 경고·deprecation 문구가 나와도 **이 과제 워크플로 실행과는 별개**인 경우가 많습니다.  
-전체 표: **[`n8n/README.md` — 로컬 실행 방법](./n8n/README.md)** · 보고서 §3.2.
+전체 표: **[`project1/n8n/README.md` — 로컬 실행 방법](./project1/n8n/README.md)** · 보고서 §3.2.
 
 **중요:** PC를 끄거나 `npx n8n` 을 종료하면 트리거가 멈춥니다. Make(클라우드)와 가장 큰 실사용 차이입니다.
 
@@ -273,11 +271,11 @@ GIF·스크린샷에도 가능하면 이메일·전체 시트 ID를 가립니다
 
 | 산출물 | 상태 | 위치 |
 |--------|------|------|
-| Make 워크플로 | ✅ | `make/*.blueprint.json`, 캡처 |
-| n8n 워크플로 | ✅ | `n8n/*.workflow.json` |
-| 비교 보고서 | ✅ 제출본 | `report/프로젝트1_자동화_도구_비교_분석_보고서.md` |
-| 실행 GIF (분기×도구) | ✅ | `gif/` |
-| n8n 설치 마찰 이미지 | ✅ | `n8n/n8n_png/` |
+| Make 워크플로 | ✅ | `project1/make/*.blueprint.json`, 캡처 |
+| n8n 워크플로 | ✅ | `project1/n8n/*.workflow.json` |
+| 비교 보고서 | ✅ 제출본 | `project1/report/프로젝트1_자동화_도구_비교_분석_보고서.md` |
+| 실행 GIF (분기×도구) | ✅ | `project1/gif/` |
+| n8n 설치 마찰 이미지 | ✅ | `project1/n8n/n8n_png/` |
 | 보너스1 AI 연동 | ✅ (OpenAI 파싱) | — |
 | 보너스2 실패 알림 | 선택·미구현 | — |
 
@@ -327,9 +325,9 @@ A. 그 폴더만 열어도 “이게 뭔 파일인지” 알 수 있게 하기 �
 | 문서 | 내용 |
 |------|------|
 | [`미션.txt`](./미션.txt) | 공식 요구·보너스·제약 |
-| [`report/프로젝트1_자동화_도구_비교_분석_보고서.md`](./report/프로젝트1_자동화_도구_비교_분석_보고서.md) | 비교 표, 장단점, GIF 증거 |
-| [`n8n/README.md`](./n8n/README.md) | n8n 실행·Import·경고 로그 해석 |
-| [`make/README.md`](./make/README.md) | Make Blueprint Import |
+| [`project1/report/프로젝트1_자동화_도구_비교_분석_보고서.md`](./project1/report/프로젝트1_자동화_도구_비교_분석_보고서.md) | 비교 표, 장단점, GIF 증거 |
+| [`project1/n8n/README.md`](./project1/n8n/README.md) | n8n 실행·Import·경고 로그 해석 |
+| [`project1/make/README.md`](./project1/make/README.md) | Make Blueprint Import |
 | [`project2/README.md`](./project2/README.md) | 자유 주제 현황 |
 | [`other/README.md`](./other/README.md) | 도구 사전 조사 |
 
