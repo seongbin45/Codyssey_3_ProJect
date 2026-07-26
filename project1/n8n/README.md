@@ -8,6 +8,7 @@
 |------|------|
 | 역할 | Make와 동일 구조의 지출 메모 자동 분류 파이프라인 재현 |
 | 런타임 | 로컬 Node (`npx n8n` / `n8n-runtime`), UI `http://localhost:5678` |
+| 설치 | 아래 **「로컬 설치 · 기동」** — Node + Windows SDK + **node-gyp 11** 권장 경로 (실측 오류 포함) |
 | 트리거 | Google Forms 전용 노드 없음 → **Google Sheets Trigger** (응답 시트 Row Added) |
 
 ## 파일 목록
@@ -50,22 +51,150 @@ Google Sheets Trigger1 (응답 시트 rowAdded)
 
 시크릿·서비스 계정 JSON은 레포에 넣지 않는다 (`.gitignore`).
 
-## 로컬 실행 방법 (Windows PowerShell · 실측)
+---
 
-런타임 디렉터리 `n8n-runtime/` 은 **gitignore** (대용량 `node_modules`).  
-최초 1회 설치는 `n8n_워크플로우_설계.md` · friction 이미지(`n8n_png/`) 참고.  
-아래는 **이미 `n8n@2.31.5` 가 설치된 뒤** 에디터를 띄우는 절차다.
+## 로컬 설치 · 기동 (Windows · 권장 경로)
 
-### 1) 기동
+이 과제의 n8n은 **Docker 없이 Node.js + npm** 으로 설치했다.  
+런타임 폴더 `n8n-runtime/` 은 용량이 커서 **gitignore** 이며, 그 안에는 README를 두지 않는다.  
+설치·오류 해결 기록의 원문 로그는 `n8n_워크플로우_설계.md` · 시각 자료는 `n8n_png/` 를 본다.
+
+### A. 한눈에 보는 권장 순서
+
+```text
+1) Node.js 설치 (LTS, n8n engines: node >= 22 권장 · 실측 Node 25 사용)
+2) (Windows) Visual Studio 2022 C++ 빌드 도구 또는 Community + 「C++를 사용한 데스크톱 개발」
+3) Windows SDK 설치  ← 여기서 막히는 경우가 많음
+4) 전역 node-gyp 11 설치  ← SDK 설치 후에도 구형 node-gyp 8 이 SDK를 못 찾는 함정
+5) 저장소에 n8n-runtime 폴더 만들고 n8n@2.31.5 설치
+6) 네이티브 모듈(isolated-vm, sqlite3 등) 재빌드 확인
+7) npx n8n → http://localhost:5678
+8) owner 가입 → Credentials → 워크플로 Import
+```
+
+### B. Node.js 설치
+
+1. [https://nodejs.org](https://nodejs.org) 에서 **LTS** 설치 (또는 본 과제 실측: Node **25.x**).  
+2. 설치 시 **“Add to PATH”** 가 켜져 있는지 확인.  
+3. **새** PowerShell 창에서 확인:
+
+```powershell
+node -v    # 예: v25.8.2  (22 이상이면 n8n 2.31 engines 충족)
+npm -v
+```
+
+- `node` 를 못 찾으면 PATH 미적용 → 터미널을 닫았다 다시 열거나 Node를 재설치.  
+- **Docker는 필수가 아님.** 본 프로젝트는 Docker 미설치 상태에서 진행했다.
+
+### C. 우리가 겪은 오류와 원인 (실측)
+
+#### 오류 1 — `missing any Windows SDK` (설치 실패의 핵심)
+
+```text
+npm error path ...\node_modules\isolated-vm
+npm error gyp ERR! find VS - missing any Windows SDK
+```
+
+| 항목 | 내용 |
+|------|------|
+| 언제 | `npm install n8n` / `npx n8n` 최초 설치 시 |
+| 왜 | n8n 의존성 **`isolated-vm`** 이 C++ **네이티브 모듈 컴파일**을 요구함 |
+| 함정 | Visual Studio 2022 가 있어도 **Windows SDK** 가 없으면 동일 오류 |
+| 증거 이미지 | `n8n_png/n8n_friction_01_windows_sdk_missing.png` |
+
+#### 오류 2 — SDK 설치 후에도 같은 메시지 (node-gyp 버전)
+
+| 항목 | 내용 |
+|------|------|
+| 언제 | Windows SDK 10.0.26100 설치 **이후** 재시도 |
+| 왜 | 당시 n8n 의존 트리가 끌어오는 **node-gyp 8.4.1** 은 VS 패키지 ID `Windows10SDK.*` 위주만 인식. `Windows11SDK.22621` 등은 *missing any Windows SDK* 로 무시할 수 있음 |
+| 해결 | 전역 **node-gyp@11** 설치 후, 네이티브 모듈을 **node-gyp 11 로 수동 재빌드** |
+| 증거 이미지 | `n8n_png/n8n_friction_02_sdk_and_nodegyp_fix.png` |
+
+#### 기타 (설치 중 부수적으로 나올 수 있음)
+
+| 증상 | 해석 |
+|------|------|
+| `EBUSY` / `EPERM` (파일 잠금) | 백신·다른 터미널이 `node_modules` 를 잠금. 관련 node 프로세스 종료 후 재시도 |
+| `cpu-features` / `better-sqlite3` 일부 실패 | 선택적 의존성. 실측에서 **기동에는 지장 없음** (필수: `isolated-vm`, `sqlite3` 등 성공) |
+
+### D. 권장 설치 절차 (Windows PowerShell · 재현용)
+
+관리자 권한이 필요한 단계는 winget/VS 설치뿐이다. 나머지는 일반 사용자 권한으로 가능하면 그렇게 한다.
+
+#### 1) C++ 빌드 환경
+
+- **Visual Studio 2022** (Community 가능)  
+  - 워크로드: **「C++를 사용한 데스크톱 개발」**  
+  - 구성 요소에 **MSVC v143**, **Windows 10/11 SDK** 관련 항목 포함 권장  
+
+이미 VS만 있고 SDK가 없으면 아래 winget 만으로도 진행 가능했던 사례가 본 과제다.
+
+#### 2) Windows SDK (winget)
+
+```powershell
+winget install --id Microsoft.WindowsSDK.10.0.26100 -e
+```
+
+설치 후 확인 예:
+
+- `C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um\windows.h` 존재 여부  
+
+#### 3) node-gyp 11 (전역)
+
+```powershell
+npm install -g node-gyp@11.2.0
+node-gyp -v    # 11.x 인지 확인
+```
+
+#### 4) n8n 전용 폴더에 설치 (권장: 저장소 루트의 `n8n-runtime`)
+
+```powershell
+# 저장소 루트 (본인 클론 경로로 변경)
+cd C:\Users\seong\Downloads\Codyssey_3_ProJect
+
+mkdir n8n-runtime -Force
+cd n8n-runtime
+
+# package.json 이 없으면 최소 생성
+if (-not (Test-Path package.json)) {
+  npm init -y
+}
+
+# 스크립트 자동 빌드가 깨질 수 있어, 본 과제에서는 ignore-scripts 후 수동 재빌드 경로를 권장
+npm install n8n@2.31.5 --no-fund --no-audit --ignore-scripts
+```
+
+#### 5) 네이티브 모듈 수동 재빌드 (핵심)
+
+설치 직후 `isolated-vm` 등이 비어 있거나 이전 실패 잔여물이 있으면, **node-gyp 11** 로 다시 빌드한다.
+
+```powershell
+cd C:\Users\seong\Downloads\Codyssey_3_ProJect\n8n-runtime
+
+# 예시: isolated-vm (경로·버전 폴더는 node_modules 안 실제 이름에 맞춤)
+cd node_modules\isolated-vm
+node-gyp rebuild
+cd ..\..
+
+# sqlite3 등 추가 네이티브 모듈도 동일하게 rebuild
+# cd node_modules\sqlite3
+# node-gyp rebuild
+```
+
+본 과제에서 재빌드 성공으로 기동에 필요했던 예: `isolated-vm`, `sqlite3`, `@sentry/node-native-stacktrace` 등.
+
+> PowerShell 한 줄로 패키지 폴더를 찾아 재빌드하는 방법은 환경마다 다르다.  
+> 실패 시 오류 전문의 `path ...\node_modules\패키지명` 을 보고 그 디렉터리에서 `node-gyp rebuild` 한다.
+
+#### 6) 기동
 
 ```powershell
 cd C:\Users\seong\Downloads\Codyssey_3_ProJect\n8n-runtime
 npx n8n
 ```
 
-경로는 본인 PC의 클론 위치에 맞게 바꾼다.
-
-### 2) 정상 기동 시 터미널에 보이는 것 (실측 로그 요지)
+### E. 정상 기동 시 터미널 로그 (실측 요지)
 
 | 로그 | 의미 |
 |------|------|
@@ -76,34 +205,52 @@ npx n8n
 | `Editor is now accessible via:` **`http://localhost:5678`** | 브라우저 접속 URL |
 | `Press "o" to open in Browser.` | 터미널에서 `o` 로 브라우저 열기 가능 |
 
-브라우저에서 **http://localhost:5678** 접속 → owner 로그인 → 워크플로 Import/Active.
+증거 이미지: `n8n_png/n8n_friction_03_n8n_ready.png`
 
-### 3) 무시해도 되는 경고 (실측에서 동반됨)
+브라우저에서 **http://localhost:5678** → 최초 **owner 계정 생성** → 로그인.
 
-기동은 되지만 아래 메시지가 뜰 수 있다. **에디터·워크플로 실행과 무관하거나 선택 사항**이다.
+### F. 기동은 되지만 무시해도 되는 경고 (실측)
 
 | 메시지 | 해석 |
 |--------|------|
-| `Failed to start Python task runner in internal mode... virtual environment is missing` | Python 러너 미구성. JS 워크플로(본 과제)는 동작. 프로덕션은 external mode 권장 안내 |
+| `Failed to start Python task runner in internal mode... virtual environment is missing` | Python 러너 미구성. **JS 워크플로(본 과제)는 동작**. 프로덕션은 external mode 권장 안내 |
 | `N8N_UNVERIFIED_PACKAGES_ENABLED` 등 deprecations | 향후 기본값 변경 예고. 당장 기동 실패 원인 아님 |
 | `Running n8n outside a container is deprecated` | 장기적으로 Docker 권장. 본 과제는 Node/`npx` 로컬 기동으로 수행 |
 | `[license SDK] Skipping renewal...` | 커뮤니티/로컬 라이선스 미초기화 — 일반적 |
 | `DeprecationWarning: util._extend` | Node 쪽 의존성 경고 — 무시 가능 |
 
-### 4) 워크플로 불러오기 · 실행
+### G. 워크플로 불러오기 · 실행
+
+**전제:** 프로젝트 1 **폼·응답 시트·결과 시트**가 이미 있어야 한다 (`../create_google_form_Project_1.js` 선행).
 
 1. `http://localhost:5678` 로그인  
-2. **Workflows → Import from File** → `n8n_지출_메모_자동_분류.workflow.json`  
-3. Credentials 재연결 (Sheets Trigger OAuth2 / Sheets OAuth2 / OpenAI)  
-4. 시트·탭 ID는 로컬 원본으로 매핑 (레포는 `***…***` 마스킹)  
-5. **Active** ON 또는 **Test workflow** / Executions에서 분기 확인  
-6. 종료: 터미널에서 `Ctrl+C`
+2. **Workflows → Import from File** → 이 폴더의 `n8n_지출_메모_자동_분류.workflow.json`  
+3. Credentials 연결  
+   - Google Sheets **Trigger** OAuth2  
+   - Google Sheets OAuth2 (Append용 — Trigger와 **타입 분리**되는 경우가 있음)  
+   - OpenAI API  
+4. 시트·탭을 **본인이 만든 문서**로 지정 (레포 JSON은 `***…***` 마스킹)  
+5. **Active** ON 또는 Test / Executions 에서 분기 확인  
+6. 종료: 터미널 `Ctrl+C`
 
-### 5) 전제 (안 되면 먼저 볼 것)
+OAuth 실패 사례(클라이언트 없음, 테스트 사용자 403 등) 시각 자료:  
+`n8n_png/n8n_friction_04_*.png` ~ `06_*.png`
 
-- Node.js 설치됨 (`node -v`)  
-- `n8n-runtime` 에 `n8n` 패키지 설치 완료 (실패 시 Windows SDK·node-gyp — `n8n_png/friction_*`)  
-- **PC가 켜져 있고 `npx n8n` 프로세스가 떠 있어야** Sheets 폴링 트리거가 동작 (Make 클라우드와 다른 점)
+### H. 빠른 점검표
+
+| 확인 | 명령·방법 |
+|------|-----------|
+| Node | `node -v` (22+ 권장) |
+| SDK | Windows Kits Include 경로에 `windows.h` |
+| node-gyp | `node-gyp -v` → **11.x** |
+| n8n 패키지 | `n8n-runtime\node_modules\n8n` 존재 |
+| 기동 | `npx n8n` → `localhost:5678` |
+| 트리거 | **`npx n8n` 프로세스가 떠 있는 동안만** Sheets 폴링 동작 |
+
+### I. 대안: Docker (본 과제는 미사용)
+
+공식은 컨테이너 배포를 권장한다. Docker Desktop + 공식 이미지로 올리면 네이티브 빌드 마찰을 줄일 수 있다.  
+본 저장소 실측·보고서 「설정 난이도」는 **Windows + npm 경로의 마찰**을 그대로 기록하기 위해 **Docker 없이** 진행했다.
 
 ## 실행 데모 GIF (이 폴더 밖)
 
