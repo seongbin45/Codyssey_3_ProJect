@@ -116,11 +116,13 @@ npx n8n
 ## 스크립트 사용 (참고)
 
 ```text
-# 워크플로 재생성 (환경에 따라 경로·ID 수정 필요)
-node n8n/_build_n8n_workflow.mjs
+# 저장소 루트에서
+node project1/n8n/_build_n8n_workflow.mjs
+node project1/n8n/_patch_n8n_append.mjs
 
-# Append 패치 적용
-node n8n/_patch_n8n_append.mjs
+# 또는 이 폴더(project1/n8n)에서
+node _build_n8n_workflow.mjs
+node _patch_n8n_append.mjs
 ```
 
 공개 레포에서는 시트/폼 ID가 마스킹되어 있으므로, 로컬 원본 ID는 개인 환경에서만 복원한다.
