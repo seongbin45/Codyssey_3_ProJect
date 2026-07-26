@@ -44,14 +44,17 @@ Zapier Free는 “단계 수 제한” 때문에 이 구조를 못 만들어서 
 
 ```text
 ① 이 문서 1~4절          → 무엇을 했는지·흐름이 뭔지
-② report/…보고서.md     → 비교·장단점·증거(GIF)  formal 제출물
+② report/…보고서.md     → 비교·장단점·증거(GIF) formal 제출물
 ③ make/ · n8n/ README    → 도구별로 파일이 뭐가 있는지
 ④ gif/ · n8n/n8n_png/    → 화면 녹화·설치 마찰 이미지
 ⑤ project2/             → 자유 주제 (별개 과제)
 ```
 
-**채점·리뷰만 할 때:** `report/프로젝트1_자동화_도구_비교_분석_보고서.md` 와 `gif/` 를 보면 됩니다.  
-**재현·수정할 때:** 아래 「실행 방법」과 각 폴더 README를 따릅니다.
+**채점·리뷰만 할 때:** `report/…보고서.md` 와 `gif/` 를 보면 됩니다. (폼을 다시 만들 필요 없음)
+
+**본인 계정으로 시나리오를 다시 돌릴 때:**  
+반드시 **폼·시트 생성(§6.2) → Make/n8n Import·연결(§6.3~6.4)** 순서.  
+폼 없이 Blueprint만 Import하면 Trigger/Append 대상이 없어 실패합니다.
 
 ---
 
@@ -137,7 +140,7 @@ Codyssey_3_ProJect/
 | **동작 화면 녹화** | [`gif/`](./gif/) (`make_*.gif`, `n8n_*.gif`) |
 | **n8n 설치가 왜 힘든지** | [`n8n/n8n_png/`](./n8n/n8n_png/) |
 | **프로젝트 2** | [`project2/README.md`](./project2/README.md) |
-| **폼을 스크립트로 다시 만들기** | `create_google_form_Project_1.js` / `project2/create_google_form_Project_2.js` |
+| **폼·시트 만들기 (재현 시 1순위)** | `create_google_form_Project_1.js` → 그다음 Make/n8n (§6.2 선행) |
 
 각 **커밋되는 폴더**에는 그 폴더 전용 `README.md`가 있습니다.  
 **Git에 올리지 않는 폴더**(`n8n-runtime/` 등)에는 README를 두지 않습니다. 실행 안내는 `n8n/README.md`에 있습니다.
@@ -146,7 +149,34 @@ Codyssey_3_ProJect/
 
 ## 6. 실행·재현 방법 (개요)
 
+### 반드시 지킬 순서 (직접 다시 돌릴 때)
+
+```text
+① Google 폼 + 응답 시트 + 결과 시트 만들기   ← 여기가 먼저
+        │
+        ▼
+② Make Blueprint / n8n 워크플로 Import
+        │
+        ▼
+③ 도구 안에서 “어느 폼·어느 시트인지” 연결(재매핑)
+        │
+        ▼
+④ 시나리오 ON / n8n Active 후, 폼에 테스트 제출
+```
+
+**왜 폼·시트가 선행인가?**
+
+- Make·n8n 시나리오는 “언제 시작할지·어디에 쓸지”를 **이미 존재하는 Google 리소스**에 붙입니다.  
+- 폼·응답 시트·결과 시트(탭)가 없으면 Trigger가 감시할 대상이 없고, Append 할 탭도 없습니다.  
+- Blueprint/JSON 안의 시트 ID는 레포에서 **마스킹**되어 있거나 **만든 사람 PC 전용**이라, 다른 환경에서는 **본인이 만든 폼·시트 ID로 다시 지정**해야 합니다.  
+- 따라서 **스크립트(또는 수동)로 폼·시트를 만든 다음** → Make/n8n을 Import·연결하는 순서가 맞습니다.  
+  순서를 바꾸면 “Import는 됐는데 404 / 시트 없음 / 빈 실행”이 납니다.
+
+프로젝트 2도 동일합니다: `create_google_form_Project_2.js` → 그다음 Make Blueprint.
+
 ### 6.1 아무것도 설치하지 않고 “결과만” 보기
+
+(폼을 다시 만들 필요 없음 — 이미 찍어 둔 증거만 봄)
 
 1. 이 README 1~4절  
 2. [`report/…보고서.md`](./report/프로젝트1_자동화_도구_비교_분석_보고서.md)  
@@ -154,48 +184,72 @@ Codyssey_3_ProJect/
 
 → 제출 증거·비교 논지를 이해하기에 충분합니다.
 
-### 6.2 Make 시나리오 다시 돌리기 (도구 A)
+### 6.2 (선행) Google 폼·시트 만들기
+
+**직접 시나리오를 재현·수정할 때만** 필요합니다. 채점용으로 GIF·보고서만 볼 때는 생략 가능합니다.
+
+**프로젝트 1**
+
+1. [script.google.com](https://script.google.com) → 새 프로젝트  
+2. [`create_google_form_Project_1.js`](./create_google_form_Project_1.js) 전체 붙여넣기  
+3. 함수 `createExpenseForm` 실행 (최초 1회 Google 권한 허용)  
+4. **실행 로그**에서 확인·보관할 것:  
+   - 폼 편집 URL / 응답(공유) URL  
+   - **응답 스프레드시트** URL (Trigger 대상)  
+   - **결과 스프레드시트** URL (탭: 고액·일반·검토)  
+
+**프로젝트 2**
+
+- 같은 방식으로 [`project2/create_google_form_Project_2.js`](./project2/create_google_form_Project_2.js) 의 `createInquiryForm`  
+- 로그의 응답 시트·결과 시트(긴급/일반 탭) ID를 이후 Make 재매핑에 사용  
+
+로그에 나온 URL·ID는 **비공개로만** 두고, 공개 레포에는 넣지 않습니다.
+
+### 6.3 Make 시나리오 다시 돌리기 (도구 A)
+
+**전제:** §6.2 로 폼·응답 시트·결과 시트가 준비되어 있어야 함.
 
 1. [Make.com](https://www.make.com) 가입·로그인  
 2. Scenario → **Import Blueprint** → `make/` 의 blueprint JSON  
 3. Google·OpenAI **연결(Connection)** 을 본인 계정으로 다시 연결  
-4. 폼 응답 시트·결과 시트(탭 3개)를 본인 것으로 지정  
-5. 시나리오 ON / Run once 후 폼 테스트  
+4. 모듈마다 Spreadsheet/Sheet 를 **§6.2에서 만든 본인 시트**로 지정 (placeholder ID 그대로 두면 404)  
+5. 시나리오 ON / Run once 후 **폼에 테스트 제출**  
 
 세부: [`make/README.md`](./make/README.md)
 
-### 6.3 n8n 다시 돌리기 (도구 B) — 실측 명령
+### 6.4 n8n 다시 돌리기 (도구 B) — 실측 명령
 
-n8n은 **내 PC에서 서버를 켠 뒤** 브라우저로 편집합니다. (Make처럼 클라우드만으로는 이 과제의 셀프호스트 구성이 아님)
+**전제:**
 
-**전제:** Node.js 설치, `n8n-runtime` 폴더에 n8n 패키지 설치 완료  
-(설치 실패 시 Windows SDK·node-gyp 이슈 → `n8n/n8n_png/`, `n8n/n8n_워크플로우_설계.md`)
+1. **§6.2 폼·시트 완료**  
+2. Node.js 설치, `n8n-runtime` 에 n8n 패키지 설치 완료  
+   (설치 실패 시 Windows SDK·node-gyp → `n8n/n8n_png/`, `n8n/n8n_워크플로우_설계.md`)
+
+n8n은 **내 PC에서 서버를 켠 뒤** 브라우저로 편집합니다.
 
 ```powershell
 cd C:\Users\seong\Downloads\Codyssey_3_ProJect\n8n-runtime
 npx n8n
 ```
 
-정상 기동 시 터미널에 예를 들어 다음이 보입니다.
+정상 기동 시 터미널 요지:
 
 - `n8n ready on ::, port 5678`
 - `Version: 2.31.5`
 - `Editor is now accessible via: http://localhost:5678`
 
-브라우저에서 **http://localhost:5678** 접속 → 워크플로 JSON Import → Google/OpenAI Credentials 연결 → Active.
+그다음:
+
+1. 브라우저 **http://localhost:5678**  
+2. 워크플로 JSON Import (`n8n/n8n_지출_메모_자동_분류.workflow.json`)  
+3. Google/OpenAI Credentials 연결  
+4. Trigger·Append 노드의 문서를 **§6.2에서 만든 시트**로 지정  
+5. Active ON → 폼 테스트 제출  
 
 Python runner 경고·deprecation 문구가 나와도 **이 과제 워크플로 실행과는 별개**인 경우가 많습니다.  
-전체 표·주의사항: **[`n8n/README.md` — 로컬 실행 방법](./n8n/README.md)** · 보고서 §3.2.
+전체 표: **[`n8n/README.md` — 로컬 실행 방법](./n8n/README.md)** · 보고서 §3.2.
 
 **중요:** PC를 끄거나 `npx n8n` 을 종료하면 트리거가 멈춥니다. Make(클라우드)와 가장 큰 실사용 차이입니다.
-
-### 6.4 Google 폼·시트 다시 만들기
-
-1. [script.google.com](https://script.google.com) 새 프로젝트  
-2. `create_google_form_Project_1.js` 전체 붙여넣기  
-3. `createExpenseForm` 실행 → 로그에 폼·시트 URL  
-
-프로젝트 2는 `project2/create_google_form_Project_2.js` 의 `createInquiryForm`.
 
 ---
 
