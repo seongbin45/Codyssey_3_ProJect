@@ -39,7 +39,10 @@
 ## 재생성
 
 ```text
-py -3.12 n8n/n8n_png/_render_setup_friction.py
+# 저장소 루트에서
+py -3.12 project1/n8n/n8n_png/_render_setup_friction.py
+# 또는 이 폴더에서
+py -3.12 _render_setup_friction.py
 ```
 
 출력 경로: **이 폴더(`n8n_png/`)**. 스크립트 수정 후 장면 문구를 바꾸면 보고서 캡션과 맞는지 확인한다.
