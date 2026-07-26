@@ -1,199 +1,276 @@
-# 노코드 자동화 기초 — 프로젝트 1: 지출 메모 자동 분류 파이프라인
+# Codyssey 노코드 자동화 — 지출 분류 & 문의 분류 저장소
 
-> Codyssey "AI 도구 학습" 커리큘럼 — 노코드 자동화 기초: 워크플로우 설계 미션  
-> 프로젝트1: 동일 워크플로우를 **도구 A(Make.com) + 도구 B(n8n)** 로 구현·비교. 비교 분석 보고서·프로젝트2는 별도.  
-> **작업 규칙:** 이 저장소에서 수정이 생기면 **GitHub(`origin/main`)에 먼저 커밋·푸시**한다.  
-> **폴더 규칙:** **Git에 커밋하는 산출물 폴더**마다 `README.md`를 두고 포함 파일·역할을 적는다.  
-> **`.gitignore`로 커밋 제외하는 폴더**(예: `n8n-runtime/`, `n8n-local/`)에는 **README를 만들지 않는다.**
+이 저장소는 **코드를 거의 쓰지 않고** 반복 업무를 자동화하는 과제(미션)의 결과물입니다.  
+채점자·동료·나중에 다시 여는 본인까지, **배경 지식 없이** 이 문서만으로 전체 그림을 잡을 수 있게 썼습니다.
 
----
-
-## 1. 이 워크플로우가 속한 위치
-
-| 구분 | 내용 |
-|---|---|
-| 소속 프로젝트 | **프로젝트 1** (동일 워크플로우를 2개 이상 도구로 구현·비교) — 프로젝트 2(자유 주제)와는 별개 |
-| 주제 | 지능형 지출 관리 및 고액 지출 분류 파이프라인 |
-| 도구 A | Make.com (아래 2~6절 — 구현 진행 중) |
-| 도구 B | **n8n (Self-hosted)** — **최종 워크플로우 확정** → `n8n/n8n_지출_메모_자동_분류.workflow.json` |
-
-### 도구 B 결정 (Zapier → n8n)
-
-| 후보 | 판단 |
-|---|---|
-| Zapier Free | Zap당 트리거 1 + 액션 1(2단계). Paths/멀티스텝 분기 불가 → **본 구조(최소 4단계+3분기) 재현 불가** |
-| Zapier 유료/체험 | 가능하나 결제·체험 의존. 미션은 무료 조합 우선 |
-| **n8n 셀프호스트 (채택)** | IF/Switch·멀티스텝 완전 무료. “자가호스팅 가능한 도구” 권장 예시와 일치 |
-
-**구현 전 전제 (중요)**
-
-1. **설치 마찰**: 무료의 대가로 Docker 또는 Node로 로컬 기동이 필요. “무료 = 즉시 사용”이 아님 → 설치 시간을 일정에 넣는다. 비교 보고서 「설정 난이도」 소재.
-2. **트리거 노드명**: n8n에 Google Forms 전용 트리거 없음. Make의 “Forms Watch Rows”와 같이 **응답 스프레드시트 폴링(Google Sheets Trigger)** 으로 동일 구조 재현. 캡처·보고서에는 노드명이 Sheets로 표시됨을 명시.
+| 항목 | 내용 |
+|------|------|
+| 커리큘럼 | Codyssey · AI 도구 학습 · **노코드 자동화 기초** |
+| 미션 원문 | [`미션.txt`](./미션.txt) |
+| 저장소 상태 | **프로젝트 1 = 제출본 완료** · **프로젝트 2 = 구현·검증 진행 중** |
+| 원격 | `origin/main`에 커밋·푸시하며 관리 |
 
 ---
 
-## 2. 워크플로우 구조
+## 1. 30초 요약 — 무엇을 만들었나?
 
-```
-[Trigger] 응답 시트 폴링 (Make: Forms Watch Rows 표기 / n8n: Google Sheets Trigger)
-      │
-      ▼
-[Action 1] OpenAI (Chat Completion, JSON 모드)
-      │  메모 텍스트 → { category, amount, summary, Classification } 추출
-      ▼
-[Router / Switch] 3-Way 조건 분기
-      ├─ 분기 A: 고액 지출 (amount ≥ 50000)                         → Sheets 탭 "고액 지출 분류 결과"
-      ├─ 분기 B: 일반 지출 (amount < 50000 AND Classification ≠ 분류불가) → Sheets 탭 "일반 지출 분류 결과"
-      └─ 분기 C: 미분류/예외 (amount = 0 AND Classification = 분류불가)  → Sheets 탭 "검토 필요"
-```
+### 프로젝트 1 (완료)
 
-**도구 A (Make)**  
-- Trigger 1개 (응답 시트 폴링) ✅  
-- Action 2개 이상 (OpenAI 파싱 + Google Sheets 기록) ✅  
-- 조건 분기 1개 이상 (3-Way Router) ✅  
-- 보너스1 (AI 연동 Action) ✅  
-- 보너스2 (실패 알림/재시도) — **미구현**
+사용자가 Google 폼에 **지출 메모**를 적으면:
 
-**도구 B (n8n)** — 동일 구조 구현 완료  
-- Trigger: Google Sheets (응답 시트 새 행)  
-- 분기: Switch/Router 3-way  
-- 설치·기동: 로컬 `n8n-runtime` + `npx n8n` → **http://localhost:5678** (Docker 미사용, n8n **2.31.5**)  
-- **실행 방법(실측):** `n8n/README.md` 「로컬 실행 방법」·보고서 §3.2 항목 2
+1. 자동으로 **AI(OpenAI)** 가 금액·카테고리·요약·분류 가능 여부를 뽑고  
+2. 규칙에 따라 **고액 / 일반 / 검토(미분류)** 세 갈래로 나눈 뒤  
+3. Google 스프레드시트 **해당 탭**에 한 줄씩 기록합니다.
+
+같은 흐름을 **두 가지 도구**로 각각 만들고, 어떤 점이 다른지 **비교 보고서**로 정리했습니다.
+
+| 구분 | 도구 | 형태 |
+|------|------|------|
+| 도구 A | **Make.com** | 클라우드 (브라우저에서 항상 동작) |
+| 도구 B | **n8n** | 내 PC에 설치해 실행 (셀프호스트) |
+
+Zapier Free는 “단계 수 제한” 때문에 이 구조를 못 만들어서 **채택하지 않았습니다.**
+
+### 프로젝트 2 (진행 중)
+
+**FinFit 팀 문의/피드백**을 폼으로 받으면 AI가 **긴급/일반**을 나누고,  
+긴급만 **Slack 팀 채널**로 알리고, 둘 다 시트에 남기는 자동화입니다. (도구: **Make**)
+
+→ 자세한 설계·Blueprint: [`project2/README.md`](./project2/README.md)
 
 ---
 
-## 3. 사용 리소스 (계정 정보는 마스킹 처리할 것)
-
-| 리소스 | 설명 | ID (레포에는 플레이스홀더만) |
-|---|---|---|
-| 구글 폼 | "지출 메모 입력 폼" — 장문형 질문 **「지출 메모」** 1개 | `***FORM_EDIT_ID***` |
-| 응답 스프레드시트 | 폼 제출이 쌓이는 시트 — **n8n/Make Trigger 대상** | `***RESPONSE_SHEET_ID***` |
-| 결과 스프레드시트 | "지출 자동 분류 결과" — 분기별 Append 대상 | `***RESULT_SHEET_ID***` |
-| Google 계정 | `cho***45@gmail.com` | 스크린샷에서도 가릴 것 |
-
-- **보안:** 실제 시트/폼 ID·편집 URL은 레포에 넣지 않는다. 로컬 n8n/Make 실행용 원본 ID는 개인 메모·비공개 환경에만 둔다. 제출 캡처에서도 URL·ID 마스킹.
-- 스크립트 최초 생성 시 결과 시트 탭은 **「분류 결과」1개**였을 수 있음. Make 구현 기준은 탭 3개(**고액 지출 분류 결과 / 일반 지출 분류 결과 / 검토 필요**), 헤더 6열: 타임스탬프·원본 메모·카테고리·금액·요약·특이사항.
-- 폼/시트는 `create_google_form_Project_1.js` (Google Apps Script)로 생성. 프로젝트2는 `project2/create_google_form_Project_2.js`.
-- **구현 차이 메모:** n8n은 `Classification`을 결과 시트「특이사항」에 저장하고 amount를 Code로 숫자 정규화함. Make는 Classification을 Router 필터에만 사용. (비교 보고서 4.7절)
-
----
-
-## 4. AI 파싱 모듈 — 시스템 프롬프트 (최종 적용본)
+## 2. 이 README를 읽는 순서 (처음 온 사람용)
 
 ```text
-당신은 지출 내역 분석 비서입니다. 사용자의 메모를 분석하여 반드시 아래 JSON 구조로만 응답하세요. 마크다운 기호(```)를 절대 포함하지 말고 순수 JSON 문자열만 출력하세요.
-
-{
-  "category": "식비, 교통비, 문화생활, 생필품, 기타, 분류불가 중 택1",
-  "amount": "지출 금액을 0 이상의 정수로만 기재",
-  "summary": "지출 내역을 10자 이내로 요약",
-  "Classification": "분류 가능 여/부 표시"
-}
-
-분류 규칙:
-1. 메모에서 금액을 명확히 추출할 수 있고 그 값이 0보다 크면, amount에 해당 숫자를 그대로 기재하고 category는 내용에 맞게 분류하세요.
-2. 실제로 비용이 들지 않은 정당한 지출(예: "무료 쿠폰으로 커피 받음", "친구가 밥 사줌")은 amount를 0으로 기재하되, category는 "분류불가"가 아니라 내용에 맞는 정상 카테고리로 분류하세요.
-3. 아래에 해당하는 경우에만 Classification를 "분류불가"로, amount는 0으로 기재하세요.
-   - 금액이 음수로 표현된 경우 (예: "-1000", "마이너스 5000원")
-   - 금액을 특정할 수 없거나 메모에 금액 자체가 없는 경우
-   - 지출 내용과 금액의 연결이 불명확해 파싱을 신뢰할 수 없는 경우
+① 이 문서 1~4절          → 무엇을 했는지·흐름이 뭔지
+② report/…보고서.md     → 비교·장단점·증거(GIF)  formal 제출물
+③ make/ · n8n/ README    → 도구별로 파일이 뭐가 있는지
+④ gif/ · n8n/n8n_png/    → 화면 녹화·설치 마찰 이미지
+⑤ project2/             → 자유 주제 (별개 과제)
 ```
 
-`category`(품목 분류)와 `Classification`(유효성 플래그: 정상/분류불가)을 별도 필드로 분리해, 정상적인 0원 지출(규칙2)과 파싱 실패·무효 지출(규칙3)을 구분함.
+**채점·리뷰만 할 때:** `report/프로젝트1_자동화_도구_비교_분석_보고서.md` 와 `gif/` 를 보면 됩니다.  
+**재현·수정할 때:** 아래 「실행 방법」과 각 폴더 README를 따릅니다.
 
 ---
 
-## 5. 조건 분기(Router) 로직 (최종 확정)
+## 3. 용어를 먼저 (Trigger / Action / 분기)
 
-| 분기 | 조건 |
-|---|---|
-| A. 고액 지출 | `amount ≥ 50000` |
-| B. 일반 지출 | `amount < 50000` AND `Classification ≠ "분류불가"` |
-| C. 미분류/예외 | `amount = 0` AND `Classification = "분류불가"` |
+| 용어 | 쉬운 말 | 이 프로젝트에서의 예 |
+|------|---------|----------------------|
+| **Trigger** | “언제 시작할까?” | 폼 응답 시트에 **새 행**이 생기면 |
+| **Action** | “그때 무엇을 할까?” | OpenAI로 분석, 시트에 쓰기, Slack 보내기 |
+| **조건 분기** | “경우에 따라 다른 길” | 금액 5만 원 이상이면 고액 탭, 아니면 … |
+| **Blueprint / Workflow JSON** | 시나리오 설계도 파일 | Make·n8n에 **가져오기(Import)** 해서 복원 |
 
-세 조건 모두 실행 로그로 정상 작동 확인 전이라면, 아래 7번 체크리스트의 "3개 분기 재실행 및 캡처" 항목을 통해 검증할 것.
-
----
-
-## 6. 트러블슈팅 로그 (보고서 "구현 과정 요약"에 그대로 활용 가능)
-
-1. **Google Sheets 매핑 누락** — Add a Row 모듈 3개 전부 `values`가 비어있어 빈 행만 삽입되던 문제 → 분기별로 타임스탬프/원본 메모/카테고리/금액/요약 컬럼 매핑 완료. ✅ 해결됨 (실행 로그로 확인: `updatedRange`, `updatedCells` 정상 반환)
-2. **미분류 분기 필터 로직 오류** — 최초엔 OpenAI 응답 객체 전체(`{{3.result}}`)를 숫자 `0`과 비교해 항상 거짓 판정되던 문제, 중간 수정에서는 필드는 고쳤으나 조건을 OR로 묶어 정상 0원 지출까지 미분류 분기로 새는 문제가 있었음 → `amount` 필드 참조로 교체 + `Classification` 필드 분리 + 두 조건을 AND로 묶어 최종 해결. ✅ 해결됨
-3. **음수 금액 처리 정책 부재** — "햄버거 -1000" 테스트 시 GPT가 부호를 무시하고 절댓값(1000)만 추출해 정상 지출로 오분류됨 → 시스템 프롬프트에 "음수/무료지출/파싱불가"를 구분하는 규칙과 `Classification` 필드를 추가해 Make 시나리오에 반영함. ✅ 해결됨 (재실행 테스트로 3개 분기 정상 라우팅 확인 필요 — 7번 체크리스트 참고)
-4. **계획서(walkthrough.md)와 구현물 불일치 — Slack 알림** — 최초 설계에는 분기 A/C에 Slack 알림이 포함돼 있었으나, 보너스2는 포함하지 않기로 결정함. ✅ 결정 완료 (구현 안 함)
+미션 공통 최소 조건: Trigger ≥ 1, Action ≥ 2, 조건 분기 ≥ 1, **각 분기가 실제로 1번 이상 실행**된 증거.
 
 ---
 
-## 7. 미완료 항목 (제출 전 체크리스트)
+## 4. 프로젝트 1 — 업무 흐름 (한 장)
 
-- [x] Router 필터 최종본 Make에 반영 (5번 표 참고)
-- [x] 시스템 프롬프트 교체·재배포 (4번 참고)
-- [x] 고아 모듈 삭제, 시나리오 이름 정리 (Sora/Whisper 미사용 표기 제거)
-### 도구 A (Make)
-- [ ] 테스트 3종(고액/일반/미분류-예외 + 무료지출 0원 케이스) 재실행 → 3개 분기 각각 최소 1회 실행 확인 및 캡처
-- [ ] 워크플로우 구성 화면 스크린샷 캡처 (계정 이메일·시트 ID 가림 처리) — 캔버스의 OpenAI 모듈 표시명("ChatGPT, Sora, Whisper")은 Make 앱 자체 이름이라 그대로 둬도 무방
+```text
+[사용자] Google 폼에 지출 메모 제출
+        │
+        ▼
+[응답 스프레드시트] 새 행 추가  ← Make/n8n 이 여기를 감시 (Trigger)
+        │
+        ▼
+[OpenAI] 메모 → JSON
+        { category, amount, summary, Classification }
+        │
+        ▼
+[Router / Switch]
+   ├─ amount ≥ 50000                    → 탭「고액 지출 분류 결과」
+   ├─ amount < 50000 이고 분류 가능     → 탭「일반 지출 분류 결과」
+   └─ amount = 0 이고 분류불가          → 탭「검토 필요」
+```
 
-### 도구 B (n8n)
-- [x] Zapier 대신 n8n 채택 결정 + 전제(설치 마찰, Sheets 트리거) 문서화
-- [x] 로컬 환경 확인 (Node ✅ / Docker ❌)
-- [x] Windows SDK 10.0.26100 설치 (winget) + node-gyp 11로 네이티브 모듈 재빌드
-- [x] n8n@2.31.5 로컬 기동 확인 (`n8n-runtime/`, http://localhost:5678)
-- [x] owner 계정 가입 완료
-- [x] Google Sheets Trigger OAuth2 Account connected
-- [x] 최종 워크플로우 JSON 확정 — `n8n/n8n_지출_메모_자동_분류.workflow.json`
-- [x] Credentials: Trigger OAuth2 + Sheets OAuth2 + OpenAI 연결
-- [x] Append 패치 반영 + 결과 검증 — 고액·일반 7/23 행 확인, 검토는 7/21 음수 행으로 분기 입증
-- [x] 비교 분석 보고서 초안 — `report/프로젝트1_자동화_도구_비교_분석_보고서.md`
-- [x] Make 동작 GIF 6개 — `gif/make_*.gif`
-- [x] n8n 설치·OAuth 마찰 이미지 — `n8n/n8n_png/n8n_setup_or_oauth.*` + friction 01–06
-- [x] **n8n 실행 GIF 6개** — `gif/n8n_*.gif` (원본 `n8n/n8n_gif/`, 내용 기준 별칭)
-- [x] 테스트 3종 + 분기별 1회 이상 캡처 + 워크플로우 JSON Export
-- [x] 워크플로우 정지 캡처 — `make/Make_workflow_view.jpeg`, `n8n/n8n_workflow_view.png`
+### 테스트 입력 예 (각 분기 1회 이상 검증함)
 
-### 공통
-- [x] 프로젝트1 비교 분석 보고서 작성 (도구명·구현 요약·비교 항목 5개 이상·장단점·적합 상황 — Zapier 미채택 사유도 포함)
-- [x] 보고서 제출본 정리 (Make Free **1,000 크레딧/월** 반영, 정지 캡처 마스킹 검수)
-- [ ] **프로젝트2(자유 주제)** — `project2/` · **확정: 팀 문의/피드백 자동 분류 / Make** · 설계 `project2/design.md` · 구현 진행 중
+| 분기 | 예 |
+|------|-----|
+| 고액 | `테스트 노트북 200000원` |
+| 일반 | `마트에서 식용유 5800원` |
+| 검토 | `분류 잘 모르겠음 -5000` (음수 등) |
+
+### AI가 쓰는 JSON 필드
+
+- **category**: 식비, 교통비, 문화생활, 생필품, 기타, 분류불가 중 하나  
+- **amount**: 0 이상 정수  
+- **summary**: 짧은 요약  
+- **Classification**: 분류 가능 / 분류불가 (정상 0원 지출과 파싱 실패를 구분)
+
+전문 시스템 프롬프트·분기 표는 예전에 루트에 길게 두었던 내용을 **보고서·워크플로 JSON**에 최종 반영해 두었습니다. 재현 시 워크플로 파일·`n8n/n8n_워크플로우_설계.md` 를 보면 됩니다.
 
 ---
 
-## 8. 저장소 디렉터리 구조
+## 5. 폴더 지도 — “이 파일은 어디?”
 
 ```text
 Codyssey_3_ProJect/
-├── README.md                 # 본 문서 — 하위 폴더마다 README.md 필수
-├── 미션.txt                  # 미션 원문
-├── create_google_form_Project_1.js  # 프로젝트1 폼·결과 시트 Apps Script
-├── make/                     # 도구 A — blueprint + 캔버스 캡처
-├── gif/                      # 실행 GIF 영문 별칭 (Make 6 + n8n 6)
-├── n8n/                      # 도구 B — 워크플로·n8n_gif/·n8n_png/
-│   ├── n8n_gif/              # n8n 녹화 원본(한글)
-│   └── n8n_png/              # 설치·OAuth 마찰 미디어
-├── report/                   # 비교 분석 보고서 — README
-├── other/                    # 사전 조사 (본문=README) — README
-├── project2/                 # 프로젝트 2 자유 주제 — README
-├── n8n-runtime/              # 로컬 n8n (gitignore · README 없음)
-└── n8n-local/                # 로컬 실험 (gitignore · README 없음)
+├── README.md                 ← 지금 읽는 문서 (전체 안내)
+├── 미션.txt                  ← 과제 요구사항 원문
+├── create_google_form_Project_1.js   ← 프로젝트1 폼·결과 시트 생성 (Apps Script)
+│
+├── report/                   ← 프로젝트1 비교 분석 보고서 (제출 핵심)
+├── other/                    ← 도구 사전 조사 (Zapier/Make/n8n)
+│
+├── make/                     ← 도구 A (Make) Blueprint·캔버스 캡처
+├── n8n/                      ← 도구 B (n8n) 워크플로 JSON·설계·마찰 이미지
+│   ├── n8n_gif/              ← n8n 실행 녹화 원본(한글 파일명)
+│   └── n8n_png/              ← 설치·OAuth 마찰 스토리보드
+├── gif/                      ← 보고서용 실행 GIF (영문 이름, Make 6 + n8n 6)
+│
+├── project2/                 ← 프로젝트2 문의 분류 (Make)
+│
+├── n8n-runtime/              ← 로컬 n8n 설치 본체 (Git에 안 올림)
+└── n8n-local/                ← 로컬 실험용 (Git에 안 올림)
 ```
 
-### 폴더 README 규칙 (항상)
+| 보고 싶은 것 | 가는 곳 |
+|--------------|---------|
+| **비교 보고서 (글 + GIF 임베드)** | [`report/프로젝트1_자동화_도구_비교_분석_보고서.md`](./report/프로젝트1_자동화_도구_비교_분석_보고서.md) |
+| **Make 시나리오 가져오기** | [`make/`](./make/) 안 `.blueprint.json` · [`make/README.md`](./make/README.md) |
+| **n8n 워크플로 가져오기** | [`n8n/n8n_지출_메모_자동_분류.workflow.json`](./n8n/n8n_지출_메모_자동_분류.workflow.json) · [`n8n/README.md`](./n8n/README.md) |
+| **동작 화면 녹화** | [`gif/`](./gif/) (`make_*.gif`, `n8n_*.gif`) |
+| **n8n 설치가 왜 힘든지** | [`n8n/n8n_png/`](./n8n/n8n_png/) |
+| **프로젝트 2** | [`project2/README.md`](./project2/README.md) |
+| **폼을 스크립트로 다시 만들기** | `create_google_form_Project_1.js` / `project2/create_google_form_Project_2.js` |
 
-| 규칙 | 설명 |
+각 **커밋되는 폴더**에는 그 폴더 전용 `README.md`가 있습니다.  
+**Git에 올리지 않는 폴더**(`n8n-runtime/` 등)에는 README를 두지 않습니다. 실행 안내는 `n8n/README.md`에 있습니다.
+
+---
+
+## 6. 실행·재현 방법 (개요)
+
+### 6.1 아무것도 설치하지 않고 “결과만” 보기
+
+1. 이 README 1~4절  
+2. [`report/…보고서.md`](./report/프로젝트1_자동화_도구_비교_분석_보고서.md)  
+3. [`gif/`](./gif/) 의 Make·n8n GIF  
+
+→ 제출 증거·비교 논지를 이해하기에 충분합니다.
+
+### 6.2 Make 시나리오 다시 돌리기 (도구 A)
+
+1. [Make.com](https://www.make.com) 가입·로그인  
+2. Scenario → **Import Blueprint** → `make/` 의 blueprint JSON  
+3. Google·OpenAI **연결(Connection)** 을 본인 계정으로 다시 연결  
+4. 폼 응답 시트·결과 시트(탭 3개)를 본인 것으로 지정  
+5. 시나리오 ON / Run once 후 폼 테스트  
+
+세부: [`make/README.md`](./make/README.md)
+
+### 6.3 n8n 다시 돌리기 (도구 B) — 실측 명령
+
+n8n은 **내 PC에서 서버를 켠 뒤** 브라우저로 편집합니다. (Make처럼 클라우드만으로는 이 과제의 셀프호스트 구성이 아님)
+
+**전제:** Node.js 설치, `n8n-runtime` 폴더에 n8n 패키지 설치 완료  
+(설치 실패 시 Windows SDK·node-gyp 이슈 → `n8n/n8n_png/`, `n8n/n8n_워크플로우_설계.md`)
+
+```powershell
+cd C:\Users\seong\Downloads\Codyssey_3_ProJect\n8n-runtime
+npx n8n
+```
+
+정상 기동 시 터미널에 예를 들어 다음이 보입니다.
+
+- `n8n ready on ::, port 5678`
+- `Version: 2.31.5`
+- `Editor is now accessible via: http://localhost:5678`
+
+브라우저에서 **http://localhost:5678** 접속 → 워크플로 JSON Import → Google/OpenAI Credentials 연결 → Active.
+
+Python runner 경고·deprecation 문구가 나와도 **이 과제 워크플로 실행과는 별개**인 경우가 많습니다.  
+전체 표·주의사항: **[`n8n/README.md` — 로컬 실행 방법](./n8n/README.md)** · 보고서 §3.2.
+
+**중요:** PC를 끄거나 `npx n8n` 을 종료하면 트리거가 멈춥니다. Make(클라우드)와 가장 큰 실사용 차이입니다.
+
+### 6.4 Google 폼·시트 다시 만들기
+
+1. [script.google.com](https://script.google.com) 새 프로젝트  
+2. `create_google_form_Project_1.js` 전체 붙여넣기  
+3. `createExpenseForm` 실행 → 로그에 폼·시트 URL  
+
+프로젝트 2는 `project2/create_google_form_Project_2.js` 의 `createInquiryForm`.
+
+---
+
+## 7. 보안 (제출·공개 레포 공통)
+
+| 하지 말 것 | 대신 |
+|------------|------|
+| API Key, 토큰, 비밀번호 커밋 | 환경·Make/n8n Connection에만 보관 |
+| 시트/폼 전체 URL·ID 그대로 공개 | `***RESULT_SHEET_ID***` 등 플레이스홀더 |
+| 이메일 전체 노출 | `cho***45@gmail.com` 처럼 일부 가림 |
+
+GIF·스크린샷에도 가능하면 이메일·전체 시트 ID를 가립니다.
+
+---
+
+## 8. 산출물 상태 (한눈에)
+
+### 프로젝트 1
+
+| 산출물 | 상태 | 위치 |
+|--------|------|------|
+| Make 워크플로 | ✅ | `make/*.blueprint.json`, 캡처 |
+| n8n 워크플로 | ✅ | `n8n/*.workflow.json` |
+| 비교 보고서 | ✅ 제출본 | `report/…보고서.md` |
+| 실행 GIF (분기×도구) | ✅ | `gif/` |
+| n8n 설치 마찰 이미지 | ✅ | `n8n/n8n_png/` |
+| 보너스1 AI 연동 | ✅ (OpenAI 파싱) | — |
+| 보너스2 실패 알림 | 선택·미구현 | — |
+
+### 프로젝트 2
+
+| 산출물 | 상태 | 위치 |
+|--------|------|------|
+| 업무 정의·설계 | ✅ | `project2/design.md` |
+| Make Blueprint | ✅ (LOCAL 실동작) | `project2/make/` |
+| 긴급→Slack 팀 채널 | 설정·검증 중 | `project2/README.md` |
+| 제출용 캡처 세트 | 진행 | — |
+
+---
+
+## 9. 자주 하는 질문
+
+**Q. 코드를 몰라도 되나?**  
+A. 과제의 본체는 Make/n8n 화면 구성입니다. Apps Script·패치 스크립트는 “폼을 빨리 만들거나 설정을 고칠 때”용이며, 없어도 도구 UI로 동일 구조를 만들 수 있습니다.
+
+**Q. 레포만 클론하면 n8n이 바로 뜨나?**  
+A. 아닙니다. `n8n-runtime` 은 Git에 없어서, 본인 PC에 Node로 설치·기동해야 합니다. 보고·채점만이면 GIF·보고서로 충분합니다.
+
+**Q. Make와 n8n 트리거 이름이 다른데 같은 건가?**  
+A. 둘 다 **폼 응답이 쌓이는 스프레드시트의 새 행**을 감시합니다. n8n에는 Forms 전용 트리거가 없어 Sheets Trigger로 표기됩니다.
+
+**Q. 폴더마다 README가 있는 이유?**  
+A. 그 폴더만 열어도 “이게 뭔 파일인지” 알 수 있게 하기 위함입니다. **gitignore 폴더에는 README를 두지 않습니다.**
+
+---
+
+## 10. 작업 규칙 (기여자·본인)
+
+1. 수정 후 **`origin/main`에 커밋·푸시**  
+2. **커밋 대상 폴더**에 파일 추가·이동 시 그 폴더 `README.md`도 갱신  
+3. 비밀·실 ID는 커밋하지 않기 (project2의 `*.LOCAL.blueprint.json`, `local_ids.json` 등은 gitignore)
+
+---
+
+## 11. 더 읽을 문서
+
+| 문서 | 내용 |
 |------|------|
-| 필수 | **커밋 대상** 산출물 폴더마다 `README.md` |
-| 내용 | 폴더 목적, **파일별 설명 표**, 명명/매핑, 관련 경로, 유지 시 주의 |
-| 갱신 | 파일 추가·이름 변경·이동 시 **같은 커밋에서** README도 수정 |
-| 하지 않음 | **`.gitignore` 커밋 제외 폴더**에는 README를 만들지 않는다 (`n8n-runtime/`, `n8n-local/`, `node_modules/` 등). 안내는 상위 커밋 문서(`n8n/README.md` 등)에 적는다. |
+| [`미션.txt`](./미션.txt) | 공식 요구·보너스·제약 |
+| [`report/프로젝트1_…보고서.md`](./report/프로젝트1_자동화_도구_비교_분석_보고서.md) | 비교 표, 장단점, GIF 증거 |
+| [`n8n/README.md`](./n8n/README.md) | n8n 실행·Import·경고 로그 해석 |
+| [`make/README.md`](./make/README.md) | Make Blueprint Import |
+| [`project2/README.md`](./project2/README.md) | 자유 주제 현황 |
+| [`other/README.md`](./other/README.md) | 도구 사전 조사 |
 
-## 9. 참고 파일
+---
 
-- `report/프로젝트1_자동화_도구_비교_분석_보고서.md` — 프로젝트1 비교 분석 보고서
-- `gif/` — Make·n8n 실동작 GIF (영문 별칭, 보고서 링크 대상)
-- `n8n/n8n_gif/` — n8n 녹화 원본 + 내용 기준 매핑 안내
-- `n8n/n8n_png/` — n8n 설치·OAuth 마찰 이미지
-- `n8n/` — n8n 최종 워크플로·설계·README
-- `make/` — Make blueprint·캡처·README
-- `create_google_form_Project_1.js` — 프로젝트1 폼/결과 시트 생성 Apps Script
-- `project2/create_google_form_Project_2.js` — 프로젝트2 문의 폼/결과 시트 생성
-- `other/README.md` — 도구 사전 조사 (Zapier/Make/n8n)
-- `미션.txt` — 미션 명세
+*처음 온 사람을 위한 입구 문서입니다. 세부 설정·트러블슈팅은 각 폴더 README와 비교 보고서를 보세요.*
