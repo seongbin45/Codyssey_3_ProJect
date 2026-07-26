@@ -119,12 +119,12 @@ Make 로그에 **Origin: Google Sheets** / **404** 이면 거의 항상 **스프
 | 순서 | 확인할 것 | 올바른 값 (Apps Script 생성 기준) |
 |------|-----------|-----------------------------------|
 | 1 | **Google connection** 이 시트를 연 계정과 같은가 | 폼/시트를 만든 Gmail |
-| 2 | **Trigger(Watch)** Spreadsheet | 응답 시트 ID `1HefV2aT…OOc0` (URL `/d/`와 `/edit` 사이) |
-| 3 | Trigger **Sheet(탭) 이름** | 영어 UI: `Form Responses 1` · **한국어 UI면 `양식 응답 1`** 인 경우가 많음 → 드롭다운에서 **실제 탭 이름** 선택 |
-| 4 | **Add a Row** Spreadsheet | 결과 시트 ID `1yCGMpxs…H9ys` (응답 시트와 **다른** 파일) |
+| 2 | **Trigger(Watch)** Spreadsheet | 폼 **응답** 시트 (Apps Script 로그의 응답 시트 URL · `/d/`와 `/edit` 사이 ID) |
+| 3 | Trigger **Sheet(탭) 이름** | 영어 UI: `Form Responses 1` · **한국어 UI면 `양식 응답 1`** → 드롭다운에서 **실제 탭 이름** 선택 |
+| 4 | **Add a Row** Spreadsheet | **결과** 시트 (응답 시트와 **다른** 파일 · 로그의 결과 시트 URL) |
 | 5 | Add a Row **Sheet** | 정확히 **`긴급 문의`** / **`일반 문의`** (띄어쓰기 포함) |
-| 6 | Spreadsheet ID 입력 형식 | **ID만** (`1yCG…`). `/1yCG…/` 처럼 슬래시로 감싸지 말 것 |
-| 7 | 브라우저에서 시트 열림 | 위 URL이 404/권한 오류면 Make도 404 |
+| 6 | Spreadsheet ID 입력 형식 | **ID만** 붙여넣기. `/ID/` 처럼 슬래시로 감싸지 말 것 |
+| 7 | 브라우저에서 시트 열림 | 로그 URL이 404/권한 오류면 Make도 404 |
 
 **한 번에 고치는 방법 (권장)**  
 각 Google Sheets / Forms 모듈에서 Spreadsheet·Sheet 필드를 **지우고 → 목록에서 다시 고르기** (검색: `FinFit`).  
