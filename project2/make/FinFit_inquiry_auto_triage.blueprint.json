@@ -8,7 +8,7 @@
       "parameters": {
         "limit": 10,
         "sheetId": "Form Responses 1",
-        "__IMTCONN__": 10009025,
+        "__IMTCONN__": 0,
         "spreadsheetId": "***INQUIRY_RESPONSE_SHEET_ID***",
         "tableFirstRow": "A1:Z1",
         "includesHeaders": true,
@@ -262,7 +262,7 @@
       "module": "openai-gpt-3:CreateCompletion",
       "version": 1,
       "parameters": {
-        "__IMTCONN__": 10009110
+        "__IMTCONN__": 0
       },
       "mapper": {
         "select": "chat",
@@ -1051,7 +1051,7 @@
               "module": "google-sheets:addRow",
               "version": 2,
               "parameters": {
-                "__IMTCONN__": 10009025
+                "__IMTCONN__": 0
               },
               "filter": {
                 "name": "긴급(urgency=긴급)",
@@ -1400,7 +1400,7 @@
               "module": "slack:CreateMessage",
               "version": 4,
               "parameters": {
-                "__IMTCONN__": 10100485
+                "__IMTCONN__": 0
               },
               "mapper": {
                 "channelWType": "list",
@@ -1449,7 +1449,7 @@
                       "mode": "chose"
                     },
                     "channelType": {
-                      "label": "Public channel (or switch to Private)"
+                      "label": "Public channel"
                     },
                     "idType": {
                       "mode": "chose",
@@ -1457,7 +1457,7 @@
                     },
                     "channel": {
                       "mode": "chose",
-                      "label": "팀 채널 선택 (공개/비공개)"
+                      "label": "Import 후 팀 채널 선택 (공개 또는 비공개)"
                     }
                   }
                 },
@@ -1587,7 +1587,7 @@
               "module": "google-sheets:addRow",
               "version": 2,
               "parameters": {
-                "__IMTCONN__": 10009025
+                "__IMTCONN__": 0
               },
               "filter": {
                 "name": "일반(urgency=일반)",
@@ -1958,7 +1958,7 @@
     "notes": [
       {
         "moduleId": null,
-        "content": "project2 FinFit 문의 자동 분류 (export 정리본). Import 후: (1) Google 연결+응답시트 탭 (Form Responses 1 또는 양식 응답 1) (2) 결과시트 긴급/일반 문의 탭 — spreadsheetId는 슬래시 없이 ID만 (3) OpenAI (4) Slack 채널+연결. 긴급 분기 Slack 본문은 text 필드에 매핑됨. 긴급 알림: Slack 팀 채널(public/private). channelType=im(DM) 사용 금지. Import 후 Slack 모듈에서 공개 또는 비공개 팀 채널을 다시 선택."
+        "content": "project2 FinFit 문의 자동 분류. Import 후 Google/OpenAI/Slack 재연결. 시트 ID는 슬래시 없이. Slack은 팀 public/private 채널."
       }
     ]
   }

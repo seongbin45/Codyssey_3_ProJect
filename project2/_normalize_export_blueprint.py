@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
-"""Normalize Make export: fix Slack text, bare sheet IDs, mask secrets for git."""
+"""Normalize Make export: Slack text, bare sheet IDs, mask secrets for git.
+
+Real spreadsheet IDs must come only from gitignored make/local_ids.json.
+"""
 from __future__ import annotations
 
 import json
@@ -12,9 +15,7 @@ SRC = ROOT / "FinFit 팀 문의 피드백 자동 분류 (project2).blueprint.jso
 OUT_PUBLIC = ROOT / "make" / "FinFit_inquiry_auto_triage.blueprint.json"
 OUT_LOCAL = ROOT / "make" / "FinFit_inquiry_auto_triage.LOCAL.blueprint.json"
 OUT_KR = ROOT / "FinFit 팀 문의 피드백 자동 분류 (project2).blueprint.json"
-
-RESPONSE_ID = "1HefV2aTsP3Jgzk_pSVvqN9cUB9za6_K-daRWwR9OOc0"
-RESULT_ID = "1yCGMpxsBQGoYPb8Dai0mImo5nJC073r9FqC5lDIH9ys"
+LOCAL_IDS_PATH = ROOT / "make" / "local_ids.json"  # gitignored
 
 SLACK_TEXT = (
     "*[FinFit 긴급 문의]* {{2.result.category}}\n"
@@ -25,6 +26,9 @@ SLACK_TEXT = (
     "연락처: {{1.`2`}}"
 )
 
+# Google Drive/Sheets file id shape (not a secret template)
+_BARE_GOOGLE_ID = re.compile(r"(?<![*A-Za-z0-9_-])1[A-Za-z0-9_-]{30,}(?![*A-Za-z0-9_-])")
+
 
 def walk(nodes, fn):
     for n in nodes:
@@ -34,37 +38,36 @@ def walk(nodes, fn):
                 walk(r.get("flow") or [], fn)
 
 
+def load_local_ids() -> dict:
+    if not LOCAL_IDS_PATH.exists():
+        return {}
+    try:
+        return json.loads(LOCAL_IDS_PATH.read_text(encoding="utf-8"))
+    except json.JSONDecodeError:
+        return {}
+
+
 def fix_runtime(j: dict) -> dict:
-    """Fixes that apply to both local and public copies."""
-
     def fix_node(n: dict) -> None:
-        mapper = n.setdefault("mapper", {}) if n.get("mapper") is not None else {}
-        params = n.setdefault("parameters", {}) if n.get("parameters") is not None else {}
+        mapper = n.get("mapper") if isinstance(n.get("mapper"), dict) else {}
+        params = n.get("parameters") if isinstance(n.get("parameters"), dict) else {}
 
-        # Strip slash-wrapped spreadsheet IDs anywhere
         for bag in (params, mapper):
-            if not isinstance(bag, dict):
-                continue
             sid = bag.get("spreadsheetId")
             if isinstance(sid, str):
                 bag["spreadsheetId"] = sid.strip().strip("/")
 
-        # Slack: team channel (public/private), not DM/slackbot
         if n.get("module") == "slack:CreateMessage":
             mapper["text"] = mapper.get("text") or SLACK_TEXT
             mapper["mrkdwn"] = True
             mapper["channelWType"] = "list"
             mapper["idType"] = "channel"
-            # public | private — not im (DM)
-            ct = mapper.get("channelType")
-            if ct in (None, "im", "mpim"):
+            if mapper.get("channelType") in (None, "im", "mpim"):
                 mapper["channelType"] = "public"
-            # Drop DM channel IDs (D…) so Make forces re-select of C…/G… team channel
             ch = mapper.get("channel")
             if isinstance(ch, str) and (ch.startswith("D") or ch.startswith("***")):
                 mapper["channel"] = "***SLACK_TEAM_CHANNEL_ID***"
             n["mapper"] = mapper
-            # restore labels for designer
             restore = n.setdefault("metadata", {}).setdefault("restore", {})
             expect = restore.setdefault("expect", {})
             expect["channelType"] = {"label": "Public channel"}
@@ -72,9 +75,7 @@ def fix_runtime(j: dict) -> dict:
                 "mode": "chose",
                 "label": "Import 후 팀 채널 선택 (공개 또는 비공개)",
             }
-            expect["idType"] = {"mode": "chose", "label": "Channel ID"}
 
-        # Sheets values: ensure 6 columns mapped with expressions (not hardcoded)
         if n.get("module") == "google-sheets:addRow":
             mapper["values"] = {
                 "0": "{{1.`0`}}",
@@ -86,25 +87,24 @@ def fix_runtime(j: dict) -> dict:
             }
             n["mapper"] = mapper
 
-        # OpenAI safety
         if n.get("module") == "openai-gpt-3:CreateCompletion":
             mapper["response_format"] = "json_object"
             mapper["parseJSONResponse"] = True
             n["mapper"] = mapper
 
-    walk(j.get("flow") or [], fix_node)
+        if params:
+            n["parameters"] = params
+        if mapper and n.get("module") != "google-sheets:addRow":
+            if n.get("module") != "slack:CreateMessage":
+                n["mapper"] = mapper
 
-    # Designer note
-    meta = j.setdefault("metadata", {})
-    meta["notes"] = [
+    walk(j.get("flow") or [], fix_node)
+    j.setdefault("metadata", {})["notes"] = [
         {
             "moduleId": None,
             "content": (
-                "project2 FinFit 문의 자동 분류 (export 정리본). "
-                "Import 후: (1) Google 연결+응답시트 탭 (Form Responses 1 또는 양식 응답 1) "
-                "(2) 결과시트 긴급/일반 문의 탭 — spreadsheetId는 슬래시 없이 ID만 "
-                "(3) OpenAI (4) Slack 채널+연결. "
-                "긴급 분기 Slack 본문은 text 필드에 매핑됨."
+                "project2 FinFit 문의 자동 분류. Import 후 Google/OpenAI/Slack 재연결. "
+                "시트 ID는 슬래시 없이. Slack은 팀 public/private 채널."
             ),
         }
     ]
@@ -113,81 +113,81 @@ def fix_runtime(j: dict) -> dict:
 
 def mask_for_public(j: dict) -> dict:
     raw = json.dumps(j, ensure_ascii=False)
-    raw = raw.replace(RESPONSE_ID, "***INQUIRY_RESPONSE_SHEET_ID***")
-    raw = raw.replace(RESULT_ID, "***INQUIRY_RESULT_SHEET_ID***")
-    # Slack channel IDs (DM/channel)
+    ids = load_local_ids()
+    for key, ph in (
+        ("response_sheet_id", "***INQUIRY_RESPONSE_SHEET_ID***"),
+        ("result_sheet_id", "***INQUIRY_RESULT_SHEET_ID***"),
+        ("form_edit_id", "***FORM_EDIT_ID***"),
+    ):
+        if ids.get(key):
+            raw = raw.replace(ids[key], ph)
+
+    raw = _BARE_GOOGLE_ID.sub("***GOOGLE_FILE_ID***", raw)
+    # tighten spreadsheet fields
+    raw = re.sub(
+        r'("spreadsheetId"\s*:\s*")\*\*\*GOOGLE_FILE_ID\*\*\*',
+        r"\1***INQUIRY_SHEET_ID***",
+        raw,
+    )
     raw = re.sub(
         r'"channel"\s*:\s*"[CDG][A-Z0-9]{8,}"',
         '"channel": "***SLACK_TEAM_CHANNEL_ID***"',
         raw,
     )
-    raw = raw.replace("***SLACK_CHANNEL_ID***", "***SLACK_TEAM_CHANNEL_ID***")
-    # connection numeric ids → leave or zero; Make re-binds on import
+    # full gmail → partial (do not touch already masked ***)
     raw = re.sub(
-        r'choiseongbin45@gmail\.com',
-        "cho***45@gmail.com",
+        r"(?<![*])([A-Za-z0-9._%+-]{2,4})[A-Za-z0-9._%+-]*@gmail\.com",
+        r"\1***@gmail.com",
         raw,
     )
-    # workspace labels may contain email already masked
+    raw = re.sub(r"cho[^*@\s]{0,20}\*\*\*@gmail\.com", "cho***45@gmail.com", raw)
+    raw = re.sub(r'"__IMTCONN__"\s*:\s*\d+', '"__IMTCONN__": 0', raw)
     return json.loads(raw)
 
 
+def apply_local_sheet_ids(j: dict, ids: dict) -> dict:
+    resp, result = ids.get("response_sheet_id"), ids.get("result_sheet_id")
+
+    def set_ids(n: dict) -> None:
+        if n.get("module") == "google-forms:watchRows" and resp:
+            p = n.setdefault("parameters", {})
+            p["spreadsheetId"] = resp
+        if n.get("module") == "google-sheets:addRow" and result:
+            m = n.setdefault("mapper", {})
+            m["spreadsheetId"] = result
+
+    walk(j.get("flow") or [], set_ids)
+    return j
+
+
 def main() -> None:
-    src = json.loads(SRC.read_text(encoding="utf-8"))
+    src_path = SRC if SRC.exists() else OUT_PUBLIC
+    if not src_path.exists():
+        raise SystemExit("No blueprint source found")
+    src = json.loads(src_path.read_text(encoding="utf-8"))
     fixed = fix_runtime(deepcopy(src))
-
-    # Local working copy (real IDs) — gitignored pattern *.LOCAL.blueprint.json
-    OUT_LOCAL.parent.mkdir(parents=True, exist_ok=True)
-    OUT_LOCAL.write_text(
-        json.dumps(fixed, ensure_ascii=False, indent=2), encoding="utf-8"
-    )
-
     public = mask_for_public(deepcopy(fixed))
-    OUT_PUBLIC.write_text(
-        json.dumps(public, ensure_ascii=False, indent=2), encoding="utf-8"
-    )
-    # Keep Korean-named export in project2 root as public-masked too (safe to commit)
-    OUT_KR.write_text(json.dumps(public, ensure_ascii=False, indent=2), encoding="utf-8")
 
-    print("LOCAL", OUT_LOCAL, "bytes", OUT_LOCAL.stat().st_size)
-    print("PUBLIC", OUT_PUBLIC, "bytes", OUT_PUBLIC.stat().st_size)
-    print("KR", OUT_KR, "bytes", OUT_KR.stat().st_size)
+    OUT_PUBLIC.parent.mkdir(parents=True, exist_ok=True)
+    pub_text = json.dumps(public, ensure_ascii=False, indent=2)
+    OUT_PUBLIC.write_text(pub_text, encoding="utf-8")
+    OUT_KR.write_text(pub_text, encoding="utf-8")
 
-    # verify
-    def check(path: Path, expect_real: bool) -> None:
-        t = path.read_text(encoding="utf-8")
-        j = json.loads(t)
-        slack_ok = False
-        slash = "/1yCGM" in t or "/1Hef" in t
+    ids = load_local_ids()
+    local = apply_local_sheet_ids(deepcopy(public), ids) if ids else deepcopy(fixed)
+    local = fix_runtime(local)
+    if ids:
+        local = apply_local_sheet_ids(local, ids)
+    OUT_LOCAL.write_text(json.dumps(local, ensure_ascii=False, indent=2), encoding="utf-8")
 
-        def fn(n):
-            nonlocal slack_ok
-            if n.get("module") == "slack:CreateMessage":
-                slack_ok = bool((n.get("mapper") or {}).get("text"))
-            sid = (n.get("mapper") or {}).get("spreadsheetId") or (
-                n.get("parameters") or {}
-            ).get("spreadsheetId")
-            if isinstance(sid, str) and sid.startswith("/"):
-                print("WARN slash id", path.name, sid)
-
-        walk(j.get("flow") or [], fn)
-        print(
-            path.name,
-            "slack_text",
-            slack_ok,
-            "has_real_response",
-            RESPONSE_ID in t,
-            "has_placeholder",
-            "***INQUIRY" in t,
-            "slash",
-            slash,
-            "expect_real",
-            expect_real,
-        )
-
-    check(OUT_LOCAL, True)
-    check(OUT_PUBLIC, False)
-    check(OUT_KR, False)
+    # verify no bare google ids in public
+    for path in (OUT_PUBLIC, OUT_KR):
+        leaked = _BARE_GOOGLE_ID.findall(path.read_text(encoding="utf-8"))
+        if leaked:
+            raise SystemExit(f"{path.name} still has bare IDs: {leaked}")
+        if "choiseongbin45" in path.read_text(encoding="utf-8"):
+            raise SystemExit(f"{path.name} still has full email local-part")
+    print("OK public masked; LOCAL written", OUT_LOCAL.stat().st_size)
 
 
 if __name__ == "__main__":

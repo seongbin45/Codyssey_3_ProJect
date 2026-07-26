@@ -20,6 +20,11 @@ project2/make/local_ids.json
 project2/make/*.LOCAL.blueprint.json
 project2/make/*.LOCAL.json
 
+# Local screenshots that may show accounts / live UI
+project2/screen.png
+project2/**/screen*.png
+project2/**/*_screenshot*.png
+
 # OS / editor
 .DS_Store
 Thumbs.db
