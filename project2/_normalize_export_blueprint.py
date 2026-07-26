@@ -185,8 +185,9 @@ def main() -> None:
         leaked = _BARE_GOOGLE_ID.findall(path.read_text(encoding="utf-8"))
         if leaked:
             raise SystemExit(f"{path.name} still has bare IDs: {leaked}")
-        if "choiseongbin45" in path.read_text(encoding="utf-8"):
-            raise SystemExit(f"{path.name} still has full email local-part")
+        # reject unmasked gmail local-parts (anything@gmail without ***)
+        if re.search(r"(?<![*])[A-Za-z0-9._%+-]{5,}@gmail\.com", path.read_text(encoding="utf-8")):
+            raise SystemExit(f"{path.name} still has unmasked gmail address")
     print("OK public masked; LOCAL written", OUT_LOCAL.stat().st_size)
 
 
