@@ -56,7 +56,7 @@ Google Sheets Trigger1 (응답 시트 rowAdded)
 |------|------|
 | `n8n_gif/` | 한글 파일명 원본 + 매핑 README |
 | `n8n_png/` | Windows SDK·OAuth 등 **설치 마찰** 이미지 |
-| `../make/make_gif/n8n_*.gif` | 보고서용 영문 별칭 (내용 기준 매핑) |
+| `../gif/n8n_*.gif` | 보고서용 영문 별칭 (내용 기준 매핑) |
 
 ## 스크립트 사용 (참고)
 

@@ -8,7 +8,7 @@
 |------|------|
 | 목적 | Self-host 무료의 대가(Windows SDK, node-gyp, OAuth)를 시각 증거로 남김 |
 | 폰트 | Windows 맑은 고딕 (`malgun.ttf`) — 한글 깨짐 방지 |
-| 실행 GIF 위치 | `../../make/make_gif/` (이 폴더 아님) |
+| 실행 GIF 위치 | `../../gif/` (이 폴더 아님) |
 
 ## 파일 목록
 
@@ -50,4 +50,4 @@ py -3.12 n8n/n8n_png/_render_setup_friction.py
 |------|------|
 | `../n8n_워크플로우_설계.md` | 설치·OAuth 서술형 기록 |
 | `../../report/프로젝트1_자동화_도구_비교_분석_보고서.md` | 마찰 GIF/PNG 임베드 |
-| `../../make/make_gif/` | 실행(런타임) 증명 GIF |
+| `../../gif/` | 실행(런타임) 증명 GIF |

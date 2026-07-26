@@ -1,7 +1,7 @@
 # make/ — 도구 A (Make.com) 산출물
 
 프로젝트 1 **도구 A: Make.com** 시나리오 블루프린트와 캔버스 정지 이미지를 둔다.  
-실행 중 화면 녹화(GIF)는 하위 폴더 `make_gif/` 를 본다. 도구 B는 `../n8n/`.
+실행 중 화면 녹화(GIF)는 형제 폴더 `../gif/` 를 본다. 도구 B는 `../n8n/`.
 
 | 항목 | 내용 |
 |------|------|
@@ -44,12 +44,12 @@ Google Forms / 응답 시트 폴링
 
 | 파일 | 내용 |
 |------|------|
-| `make_gif/make_high_1_form.gif` | 고액 · 폼 응답 |
-| `make_gif/make_high_2_action.gif` | 고액 · 시나리오 액션 |
-| `make_gif/make_normal_1_form.gif` | 일반 · 폼 응답 |
-| `make_gif/make_normal_2_action.gif` | 일반 · 시나리오 액션 |
-| `make_gif/make_review_1_form.gif` | 미분류 · 폼 응답 |
-| `make_gif/make_review_2_action.gif` | 미분류 · 시나리오 액션 |
+| `../gif/make_high_1_form.gif` | 고액 · 폼 응답 |
+| `../gif/make_high_2_action.gif` | 고액 · 시나리오 액션 |
+| `../gif/make_normal_1_form.gif` | 일반 · 폼 응답 |
+| `../gif/make_normal_2_action.gif` | 일반 · 시나리오 액션 |
+| `../gif/make_review_1_form.gif` | 미분류 · 폼 응답 |
+| `../gif/make_review_2_action.gif` | 미분류 · 시나리오 액션 |
 
 ## 관련 문서
 

@@ -143,9 +143,9 @@
 - [x] Credentials: Trigger OAuth2 + Sheets OAuth2 + OpenAI 연결
 - [x] Append 패치 반영 + 결과 검증 — 고액·일반 7/23 행 확인, 검토는 7/21 음수 행으로 분기 입증
 - [x] 비교 분석 보고서 초안 — `report/프로젝트1_자동화_도구_비교_분석_보고서.md`
-- [x] Make 동작 GIF 6개 — `make/make_gif/make_*.gif`
+- [x] Make 동작 GIF 6개 — `gif/make_*.gif`
 - [x] n8n 설치·OAuth 마찰 이미지 — `n8n/n8n_png/n8n_setup_or_oauth.*` + friction 01–06
-- [x] **n8n 실행 GIF 6개** — `make/make_gif/n8n_*.gif` (원본 `n8n/n8n_gif/`, 내용 기준 별칭)
+- [x] **n8n 실행 GIF 6개** — `gif/n8n_*.gif` (원본 `n8n/n8n_gif/`, 내용 기준 별칭)
 - [x] 테스트 3종 + 분기별 1회 이상 캡처 + 워크플로우 JSON Export
 - [x] 워크플로우 정지 캡처 — `make/Make_workflow_view.jpeg`, `n8n/n8n_workflow_view.png`
 
@@ -163,8 +163,8 @@ Codyssey_3_ProJect/
 ├── README.md                 # 본 문서 — 하위 폴더마다 README.md 필수
 ├── 미션.txt                  # 미션 원문
 ├── create_google_form_Project_1.js  # 프로젝트1 폼·결과 시트 Apps Script
-├── make/                     # 도구 A — blueprint + make_gif/ + 캔버스 캡처
-│   └── make_gif/             # 실행 GIF 영문 별칭 (Make 6 + n8n 6)
+├── make/                     # 도구 A — blueprint + 캔버스 캡처
+├── gif/                      # 실행 GIF 영문 별칭 (Make 6 + n8n 6)
 ├── n8n/                      # 도구 B — 워크플로·n8n_gif/·n8n_png/
 │   ├── n8n_gif/              # n8n 녹화 원본(한글)
 │   └── n8n_png/              # 설치·OAuth 마찰 미디어
@@ -187,7 +187,7 @@ Codyssey_3_ProJect/
 ## 9. 참고 파일
 
 - `report/프로젝트1_자동화_도구_비교_분석_보고서.md` — 프로젝트1 비교 분석 보고서
-- `make/make_gif/` — Make·n8n 실동작 GIF (영문 별칭, 보고서 링크 대상)
+- `gif/` — Make·n8n 실동작 GIF (영문 별칭, 보고서 링크 대상)
 - `n8n/n8n_gif/` — n8n 녹화 원본 + 내용 기준 매핑 안내
 - `n8n/n8n_png/` — n8n 설치·OAuth 마찰 이미지
 - `n8n/` — n8n 최종 워크플로·설계·README
