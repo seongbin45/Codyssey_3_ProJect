@@ -63,9 +63,9 @@ Google Sheets Trigger1 (응답 시트 rowAdded)
 
 ```text
 1) Node.js 설치 (LTS, n8n engines: node >= 22 권장 · 실측 Node 25 사용)
-2) (Windows) Visual Studio 2022 C++ 빌드 도구 또는 Community + 「C++를 사용한 데스크톱 개발」
-3) Windows SDK 설치  ← 여기서 막히는 경우가 많음
-4) 전역 node-gyp 11 설치  ← SDK 설치 후에도 구형 node-gyp 8 이 SDK를 못 찾는 함정
+2) winget 으로 Visual Studio 2022 Community + VC Tools + Windows11SDK.22621  (아래 D-1 실측 명령)
+3) (필요 시) Windows SDK 10.0.26100 추가  ← 여전히 SDK 오류일 때
+4) 전역 node-gyp 11 설치  ← 구형 node-gyp 8 이 SDK 패키지를 못 찾는 함정 해소
 5) 저장소에 n8n-runtime 폴더 만들고 n8n@2.31.5 설치
 6) 네이티브 모듈(isolated-vm, sqlite3 등) 재빌드 확인
 7) npx n8n → http://localhost:5678
@@ -122,15 +122,31 @@ npm error gyp ERR! find VS - missing any Windows SDK
 
 관리자 권한이 필요한 단계는 winget/VS 설치뿐이다. 나머지는 일반 사용자 권한으로 가능하면 그렇게 한다.
 
-#### 1) C++ 빌드 환경
+#### 1) Visual Studio 2022 Community + C++ 도구 + Windows 11 SDK (winget · 실측)
 
-- **Visual Studio 2022** (Community 가능)  
-  - 워크로드: **「C++를 사용한 데스크톱 개발」**  
-  - 구성 요소에 **MSVC v143**, **Windows 10/11 SDK** 관련 항목 포함 권장  
+본 과제는 **PowerShell에서 winget 한 줄**로 VS 2022 Community와 네이티브 빌드에 필요한 구성 요소를 설치했다.
 
-이미 VS만 있고 SDK가 없으면 아래 winget 만으로도 진행 가능했던 사례가 본 과제다.
+```powershell
+winget install --id Microsoft.VisualStudio.2022.Community --exact --force --custom "--add Microsoft.VisualStudio.Component.Windows11SDK.22621 --add Microsoft.VisualStudio.Component.VC.Tools.x86.x64 --add Microsoft.VisualStudio.Component.VC.Tools.ARM64" --source winget
+```
 
-#### 2) Windows SDK (winget)
+| 옵션·구성 요소 | 의미 |
+|----------------|------|
+| `Microsoft.VisualStudio.2022.Community` | Visual Studio 2022 Community |
+| `--exact --force` | 패키지 ID 정확 매칭·재설치/덮어쓰기 허용 |
+| `Windows11SDK.22621` | Windows 11 SDK (10.0.22621) — node-gyp / 네이티브 빌드용 |
+| `VC.Tools.x86.x64` | MSVC C++ 도구 (x86/x64) |
+| `VC.Tools.ARM64` | MSVC C++ 도구 (ARM64, 선택적으로 포함) |
+| `--source winget` | winget 원본 저장소 지정 |
+
+설치 후 **새 PowerShell** 을 열고, VS Installer에서 구성 요소가 들어갔는지 확인해도 된다.
+
+> **참고:** 이후 빌드 로그에서 SDK를 못 찾는 경우, 별도로 Windows SDK 10.0.26100 을 추가 설치하기도 했다 (아래 2).  
+> VS에 넣은 `Windows11SDK.22621` 만으로는 **구형 node-gyp 8** 이 패키지를 인식하지 못해 오류 2가 이어질 수 있다 → **node-gyp 11** 필수.
+
+#### 2) (필요 시) Windows SDK 추가 설치 (winget)
+
+VS 설치 후에도 `missing any Windows SDK` 가 남거나, 키트 경로를 확실히 맞추고 싶을 때:
 
 ```powershell
 winget install --id Microsoft.WindowsSDK.10.0.26100 -e
@@ -139,6 +155,7 @@ winget install --id Microsoft.WindowsSDK.10.0.26100 -e
 설치 후 확인 예:
 
 - `C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um\windows.h` 존재 여부  
+- 또는 `...\Include\10.0.22621.0\um\windows.h` (Windows11SDK.22621 경로)
 
 #### 3) node-gyp 11 (전역)
 
