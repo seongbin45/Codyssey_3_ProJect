@@ -328,7 +328,7 @@ A. 그 폴더만 열어도 “이게 뭔 파일인지” 알 수 있게 하기 �
 | [`project1/report/프로젝트1_자동화_도구_비교_분석_보고서.md`](./project1/report/프로젝트1_자동화_도구_비교_분석_보고서.md) | 비교 표, 장단점, GIF 증거 |
 | [`project1/n8n/README.md`](./project1/n8n/README.md) | n8n 실행·Import·경고 로그 해석 |
 | [`project1/make/README.md`](./project1/make/README.md) | Make Blueprint Import |
-| [`project2/README.md`](./project2/README.md) | 자유 주제 현황 |
+| [`project2/README.md`](./project2/README.md) | 프로젝트2 현황 |
 | [`other/README.md`](./other/README.md) | 도구 사전 조사 |
 
 ---
