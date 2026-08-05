@@ -21,8 +21,8 @@ Codyssey 미션 **[프로젝트 2] 자유 주제 자동화 설계 및 구현**.
 | 1 | 자동화할 **반복 업무 1개** 정의 | ✅ 문의/피드백 긴급 분류 (`design.md` §1) |
 | 2 | **도구 1개** 선정 + 선정 이유 | ✅ Make — 상시 클라우드 (`design.md` §2) |
 | 3 | 워크플로우 **설계 문서** (설명 또는 다이어그램) | ✅ `design.md` |
-| 4 | **구현 화면** 캡처 | ⬜ Make 캔버스 스크린샷 (선택 시 `captures/` 정리) |
-| 5 | **실행 결과** 캡처 (분기별 1회 이상) | 🔄 긴급 분기 동작 확인됨 (Slack 성공 로그) · 일반 분기·캡처 정리 남음 |
+| 4 | **구현 화면** 캡처 | 🔄 `make/Make_workflow_view.jpeg` · `screen.png` (있으면 사용) |
+| 5 | **실행 결과** 캡처 (분기별 1회 이상) | ✅ `gif/` — 긴급 form/action/slack + 일반 form/action (5 GIF) |
 | 6 | 실제 동작 워크플로우 (Export/Blueprint 등) | ✅ LOCAL Blueprint 실동작 확인 · 공개용은 마스킹본 |
 
 ### 공통 기능 요구 (프로젝트 1과 동일 코어)
@@ -42,8 +42,9 @@ Codyssey 미션 **[프로젝트 2] 자유 주제 자동화 설계 및 구현**.
 | 단계 | 내용 |
 |------|------|
 | Trigger | Google Forms 문의 접수 → 응답 시트 폴링 |
-| Action | OpenAI JSON 분류 → Sheets 기록 (+ 긴급 시 Slack/이메일) |
+| Action | OpenAI JSON 분류 → Sheets 기록 (+ 긴급 시 **Slack 팀 채널** 알림) |
 | 분기 | `urgency = 긴급` / `일반` (2-way) |
+| 긴급 알림 | Slack `Create a Message` → **Public channel** · 채널명 **`새-채널`** (아래 §7) |
 | 테스트 | 결제 장애(긴급) · 다크모드 요청(일반) — `design.md` §6 |
 
 ### 검토만 했던 후보 (미채택)
@@ -73,21 +74,24 @@ Codyssey 미션 **[프로젝트 2] 자유 주제 자동화 설계 및 구현**.
 
 ```text
 project2/
-├── README.md              # 본 문서 (주제·체크리스트·규칙)
+├── README.md              # 본 문서 (주제·체크리스트·규칙·Slack 채널)
 ├── design.md              # 워크플로우 설계 (확정 초안)
-├── make/                  # Make Blueprint·캡처 — 구현 시 추가
-└── gif/ 또는 captures/    # 실행 증명 — 구현 시 추가
+├── make/                  # Make Blueprint·캡처
+├── gif/                   # 실행 증명 GIF (5)
+├── create_google_form_Project_2.js
+└── FinFit 팀 문의 피드백 자동 분류 (project2).blueprint.json
 ```
 
 ### 현재 파일
 
 | 파일 | 설명 |
 |------|------|
-| `README.md` | 진행 상태·체크리스트·규칙 |
+| `README.md` | 진행 상태·체크리스트·규칙·**Slack 팀 채널** |
 | `design.md` | 업무 정의, Make 선정 이유, 2-way 구조, JSON 스키마, 테스트 케이스 |
-| `make/FinFit_inquiry_auto_triage.blueprint.json` | Make Import용 (마스킹) |
-| `FinFit 팀 문의 피드백 자동 분류 (project2).blueprint.json` | Make Export 정리본 (마스킹, Slack 본문 포함) |
+| `make/FinFit_inquiry_auto_triage.blueprint.json` | Make Import용 (시트·Slack ID **마스킹**) |
+| `FinFit 팀 문의 피드백 자동 분류 (project2).blueprint.json` | Make Export 정리본 (공개 마스킹 · Slack 본문 템플릿 포함) |
 | `make/README.md` | Import 절차·시트 헤더·재매핑 안내 |
+| `gif/` | 긴급/일반 form·action + Slack 실행 GIF (`gif/README.md`) |
 | `create_google_form_Project_2.js` | 문의 폼·결과 시트(긴급/일반 탭) Apps Script |
 | `_build_blueprint.py` | Blueprint 재생성 스크립트 |
 
@@ -113,8 +117,72 @@ project2/
 3. [x] Google 문의 폼 + 결과 시트 탭「긴급 문의」「일반 문의」  
 4. [x] Make 연결 재매핑 (Google / OpenAI / Slack)  
 5. [x] **긴급 분기** 테스트 — Slack 메시지 전송 성공 (예: 커피 수혈 요청)  
-6. [ ] **일반 분기** 1회 + 실행 로그·시트·캔버스 캡처 제출용 정리  
-7. [ ] Slack **팀 채널**(공개/비공개)로 변경 — Blueprint는 `public` 기본, Make에서 채널 재선택
+6. [x] **일반 분기** 실행 + GIF 정리 (`gif/make_normal_*.gif`)  
+7. [x] 실행 증명 GIF 5종 — `gif/README.md` 참고 (원본 여백 crop 후 변환)  
+8. [x] Slack **팀 공개 채널** `새-채널` 연결 (Blueprint: `channelType=public`, DM 아님) — §7
+
+---
+
+## 7. Slack 팀 채널 (긴급 알림)
+
+실동작 Export 기준 모듈: **`slack:CreateMessage`** (긴급 분기 Action).  
+참고 Export: Make에서 받은  
+`FinFit 팀 문의 피드백 자동 분류 (project2).blueprint.json`  
+(로컬 Downloads 또는 동일 이름 정리본).
+
+### 7.1 Blueprint에 적힌 설정 (제출·재현용 요약)
+
+| 항목 | 값 | 비고 |
+|------|-----|------|
+| 모듈 | `slack:CreateMessage` | 긴급 Router 경로만 |
+| Connection | Slack **bot** connection (`slack3`) | 워크스페이스 Make 연동 |
+| Channel type | **`public`** (`Public channel`) | DM(`im`) / slackbot **사용 안 함** |
+| 채널 선택 방식 | 목록에서 선택 (`channelWType: list`) | “Enter a channel ID or name” → Select from the list |
+| 채널 표시 이름 | **`새-채널`** | Make UI label |
+| 채널 ID (실값) | `C…` 형태 (예: Export에 `C0BM…`) | **공개 레포 Blueprint에는 넣지 않음** → `***SLACK_TEAM_CHANNEL_ID***` |
+| 메시지 | mrkdwn 템플릿 | 카테고리·요약·긴급도·원문·접수·연락처 |
+
+메시지 템플릿 (Blueprint `text`와 동일 구조):
+
+```text
+*[FinFit 긴급 문의]* {{2.result.category}}
+요약: {{2.result.summary}}
+긴급도: {{2.result.urgency}}
+원문: {{1.1}}
+접수: {{1.0}}
+연락처: {{1.2}}
+```
+
+### 7.2 공개 Blueprint vs Make 실시나리오
+
+| 구분 | Slack `channel` 필드 |
+|------|----------------------|
+| **Git 공개본** (`make/…blueprint.json`, 정리 Export) | `***SLACK_TEAM_CHANNEL_ID***` (마스킹) |
+| **Make 실동작 시나리오** | 목록에서 **`새-채널`** 선택 (Public channel) |
+
+Import 직후 `***SLACK_TEAM_CHANNEL_ID***` 가 그대로면 Slack이 `channel_not_found` 를 낸다.  
+**반드시 Make UI에서 `새-채널`을 다시 고른 뒤 Save** 한다.
+
+### 7.3 Make에서 연결하는 절차
+
+1. 긴급 분기 **Slack – Create a Message** 모듈 열기  
+2. **Connection** = 기존 bot connection (동일 워크스페이스)  
+3. **Channel type** = `Public channel`  
+4. **Public channel** = 목록에서 **`새-채널`** 선택  
+5. 해당 채널에 Make 앱(봇)이 없으면 Slack에서 `/invite @Make`(또는 앱 이름)  
+6. **Text** 템플릿 유지 → Save → 긴급 테스트 1건 → `새-채널`에 메시지 확인  
+
+| 쓰지 않음 | 쓰는 것 |
+|-----------|---------|
+| `Direct message` / `im` / DM ID (`D…`) | **Public** 팀 채널 · 이름 **`새-채널`** · ID `C…` |
+| 마스킹 문자열 `***SLACK_TEAM_CHANNEL_ID***` 그대로 실행 | Make 드롭다운에서 실 채널 선택 |
+
+### 7.4 실행 증거
+
+| 증거 | 경로 |
+|------|------|
+| Slack 수신 화면 | `gif/make_urgent_3_slack.gif` |
+| 긴급 시트 + 시나리오 | `gif/make_urgent_2_action.gif` |
 
 ---
 
@@ -124,5 +192,7 @@ project2/
 |------|------|
 | `../미션.txt` | 프로젝트 2 요구·보너스·제약 원문 |
 | `../README.md` | 저장소 전체 진행 상태 |
+| `gif/` | 실행 증명 GIF |
+| `make/README.md` | Import·Slack 재매핑 상세 |
 | `../report/` | 프로젝트 1 비교 보고서 (제출본) |
-| `../make/`, `../n8n/` | 프로젝트 1 도구 산출물 (참고·패턴 재사용) |
+| `../project1/make/`, `../project1/n8n/` | 프로젝트 1 도구 산출물 (참고) |
