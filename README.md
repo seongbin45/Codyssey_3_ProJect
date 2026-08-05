@@ -62,7 +62,7 @@ Zapier Free는 “단계 수 제한” 때문에 이 구조를 못 만들어서 
 | 프로젝트 | 먼저 볼 것 |
 |----------|------------|
 | 1 | `project1/report/프로젝트1_자동화_도구_비교_분석_보고서.md` + `project1/gif/` |
-| 2 | `project2/design.md` + `project2/gif/` + `project2/make/Make_workflow_view.jpeg` |
+| 2 | **`project2/design.md` 한 장** (§3.1 구현 화면 · §7 실행 GIF 임베드) · 원본은 `gif/` · `make/` |
 
 (폼을 다시 만들 필요 없음)
 
