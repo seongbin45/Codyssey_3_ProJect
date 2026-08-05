@@ -43,7 +43,7 @@ Zapier Free는 “단계 수 제한” 때문에 이 구조를 못 만들어서 
 | Action | OpenAI 분류 · Sheets 기록 · (긴급) Slack 메시지 |
 | 증거 | [`project2/gif/`](./project2/gif/) · 구현 화면 [`project2/make/Make_workflow_view.jpeg`](./project2/make/Make_workflow_view.jpeg) |
 
-→ 설계·체크리스트·Slack 재매핑: [`project2/README.md`](./project2/README.md)
+→ 설계(GIF 포함): [`project2/report/design.md`](./project2/report/design.md) · 체크리스트·Slack: [`project2/README.md`](./project2/README.md)
 
 ---
 
@@ -54,7 +54,7 @@ Zapier Free는 “단계 수 제한” 때문에 이 구조를 못 만들어서 
 ② project1/report/프로젝트1_…보고서.md → 비교·장단점·증거(GIF) 제출 본문
 ③ project1/make/ · project1/n8n/ README    → 도구별로 파일이 뭐가 있는지
 ④ project1/gif/ · project1/n8n/n8n_png/    → 화면 녹화·설치 마찰 이미지
-⑤ project2/README · design · gif · make    → 자유 주제 (별개 과제, 제출 완료)
+⑤ project2/report/design.md · gif · make   → 자유 주제 (별개 과제, 제출 완료)
 ```
 
 **채점·리뷰만 할 때**
