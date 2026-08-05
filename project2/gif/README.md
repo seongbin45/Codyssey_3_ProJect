@@ -19,7 +19,7 @@ FinFit 팀 문의/피드백 자동 분류 시나리오의 **폼 제출 + 실행 
 | `normal` | 일반 분기 (`urgency = 일반`) |
 | `1_form` | Google 문의 폼 입력·제출 |
 | `2_action` | Make 시나리오 실행 + 결과 시트 확인 |
-| `3_slack` | 긴급 시 Slack 알림 (팀 채널/앱 동작) |
+| `3_slack` | 긴급 Slack 알림 — **Public `#새-채널`** · Make 앱 메시지 |
 
 ## 파일 목록 (5)
 
@@ -27,7 +27,7 @@ FinFit 팀 문의/피드백 자동 분류 시나리오의 **폼 제출 + 실행 
 |------|-----------|-----------|
 | `make_urgent_1_form.gif` | 긴급 문의 폼 작성·제출 | 응답 시트에 행 추가 |
 | `make_urgent_2_action.gif` | Make 실행 → 긴급 경로 | 「긴급 문의」탭 기록 |
-| `make_urgent_3_slack.gif` | Slack 알림 확인 | 긴급 메시지 수신 |
+| `make_urgent_3_slack.gif` | Slack **`#새-채널`(공개)** 에서 Make 앱 긴급 메시지 | 헤더·본문에 `#새-채널` 표시 |
 | `make_normal_1_form.gif` | 일반 문의 폼 작성·제출 | 응답 시트에 행 추가 |
 | `make_normal_2_action.gif` | Make 실행 → 일반 경로 | 「일반 문의」탭만 · Slack 없음 |
 

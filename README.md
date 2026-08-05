@@ -302,7 +302,7 @@ GIF·스크린샷에도 가능하면 이메일·전체 시트 ID를 가립니다
 | Make Blueprint (마스킹) | ✅ | `project2/make/*.blueprint.json` · 루트 Export 정리본 |
 | 구현 화면 | ✅ | `project2/make/Make_workflow_view.jpeg` |
 | 실행 결과 (분기별) | ✅ | `project2/gif/` (긴급 3 + 일반 2) |
-| 긴급→Slack 팀 채널 | ✅ Public **`새-채널`** | `project2/README.md` §7 |
+| 긴급→Slack | ✅ Public **`#새-채널`** (GIF 교차검증) | `project2/gif/make_urgent_3_slack.gif` · `README` §7 |
 | 보너스1 AI 연동 | ✅ OpenAI JSON 분류 | Blueprint 모듈 2 |
 | 보너스2 실패 알림 | 선택·미구현 | — |
 

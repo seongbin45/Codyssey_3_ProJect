@@ -48,7 +48,7 @@
 | **2. OpenAI – Create a Completion** | OpenAI connection · `json_object` · parse JSON 유지 | 프로젝트1과 동일 계정 가능 |
 | **3. Router** | 필터: `{{2.result.urgency}}` = `긴급` / `일반` | 수정 불필요(이미 설정) |
 | **4. Sheets – 긴급 문의** | Spreadsheet = **결과 시트** · 탭 **`긴급 문의`** | 로그 ③ 결과 시트 URL |
-| **5. Slack – Create a Message** | Slack 연결 · **팀 채널(공개/비공개)** · Text 템플릿 | **DM(`im`/slackbot) 사용 안 함.** 아래「Slack 팀 채널」참고 |
+| **5. Slack – Create a Message** | Slack 연결 · **Public · `#새-채널`** · Text 템플릿 | **최종 검증 GIF:** `../gif/make_urgent_3_slack.gif`. DM 사용 안 함 |
 | **6. Sheets – 일반 문의** | 동일 결과 시트 · 탭 **`일반 문의`** | 로그 ③ |
 
 **LOCAL Blueprint** 를 쓰면 1·4·6의 시트 ID는 이미 채워져 있어 **Connection 선택 + Email To** 만 하면 된다.  
@@ -82,33 +82,36 @@ UI에서 시트가 안 보이면 Spreadsheet를 한 번 다시 고르거나 ID �
        └─ urgency = "일반" → [6] Sheets「일반 문의」만
 ```
 
-### Slack 팀 채널로 바꾸기 (DM → 공개/비공개 채널)
+### Slack 최종 설정 (GIF와 일치 — `#새-채널` · Public)
 
-Blueprint 기본값: `channelType = public` (Make UI에서 **Private channel** 로 바꿀 수 있음).
+초기에는 “공개 또는 비공개 팀 채널” 후보로 열어 두었으나, **최종 검증·제출 증거**는 아래와 같다.
 
-**Make 시나리오에서 지금 고치기**
+| 항목 | 최종 값 | 증거 |
+|------|---------|------|
+| Channel type | **`public`** (`Public channel`) | Make Export · Blueprint `channelType` |
+| 채널 이름 | **`#새-채널`** (Slack UI `#` = 공개 채널) | **`../gif/make_urgent_3_slack.gif`** 상단·본문 |
+| 발신 | **Make 앱** 메시지 `[FinFit 긴급 문의]…` | 동일 GIF |
+| 사용 안 함 | DM / `im` / slackbot · 비공개(`private`)는 미채택 | GIF에 DM 화면 없음 |
+
+**Make 시나리오에서 맞추기 (재현)**
 
 1. 긴급 분기 **Slack – Create a Message** 모듈 열기  
-2. **Channel type**  
-   - 공개 채널 → `Public channel`  
-   - 비공개 채널 → `Private channel`  
-   - **`Direct message` / `im` 사용하지 않음**  
-3. **User (Channel ID) / Channel**  
-   - 목록에서 팀 채널 선택 (예: `#finfit-alerts`, `#general`)  
-   - 목록에 없으면 Slack에서 채널 생성 후, 봇을 **채널에 초대** (`/invite @make` 또는 앱 이름)  
-4. **Text** 유지 (긴급 템플릿)  
-5. Save → 긴급 테스트 1건 → 해당 채널에 메시지 확인  
+2. **Channel type** = `Public channel` (Private / Direct message 아님)  
+3. **Public channel** = 목록에서 **`새-채널`** 선택  
+4. 채널에 Make 봇 초대 (`/invite @Make` 등) — 없으면 전송 실패  
+5. **Text** 긴급 템플릿 유지 → Save → 긴급 1건 → `#새-채널`에 Make 메시지 확인  
 
-| 이전 (동작은 했으나 데모용) | 목표 |
-|---------------------------|------|
-| `channelType: im` · ID `D…` (DM/slackbot) | `public` 또는 `private` · ID `C…` / `G…` (팀 채널) |
+| 이전 (검증 초기) | 최종 (제출) |
+|------------------|-------------|
+| DM(`im`) 또는 “공개/비공개 중 택일” 모호 표기 | **Public + `#새-채널`** · GIF로 확정 |
 
 ### Export 정리 시 고친 점
 
 | 이슈 | 조치 |
 |------|------|
 | Slack `text` 비어 있음 | 긴급 알림 본문 템플릿 삽입 (`{{2.result.*}}`, `{{1.1}}`) |
-| Slack DM(`im`) | 기본을 **팀 public 채널**로 변경, DM ID 제거 |
+| Slack DM(`im`) | **Public `#새-채널`** 로 확정, DM ID 제거 |
+| 문서 “공개 또는 비공개” 모호 | 최종 검증 GIF 기준으로 **Public only** 표기 통일 |
 | `spreadsheetId` 슬래시 감싸기 | ID만 남김 → Sheets 404 방지 |
 | 실 시트/채널 ID 공개 노출 | 공개 Blueprint는 `***…***` 마스킹 |
 

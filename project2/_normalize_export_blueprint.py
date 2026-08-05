@@ -73,7 +73,8 @@ def fix_runtime(j: dict) -> dict:
             expect["channelType"] = {"label": "Public channel"}
             expect["channel"] = {
                 "mode": "chose",
-                "label": "Import 후 팀 채널 선택 (공개 또는 비공개)",
+                # Final verified in gif/make_urgent_3_slack.gif: #새-채널 (public)
+                "label": "Import 후 Public channel → #새-채널 선택",
             }
 
         if n.get("module") == "google-sheets:addRow":
@@ -104,7 +105,8 @@ def fix_runtime(j: dict) -> dict:
             "moduleId": None,
             "content": (
                 "project2 FinFit 문의 자동 분류. Import 후 Google/OpenAI/Slack 재연결. "
-                "시트 ID는 슬래시 없이. Slack은 팀 public/private 채널."
+                "시트 ID는 슬래시 없이. Slack 최종 검증: Public channel #새-채널 "
+                "(증거: gif/make_urgent_3_slack.gif). DM(im) 사용 안 함."
             ),
         }
     ]

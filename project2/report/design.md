@@ -28,7 +28,7 @@ FinFit 팀/제품에 들어오는 문의·피드백을 사람이 매번 읽고 "
       │  문의 내용 → { urgency: "긴급"/"일반", category: "버그/기능요청/결제/기타", summary }
       ▼
 [Filter/Router] 2-Way 조건 분기
-      ├─ 긴급 (urgency = "긴급")  → [Action 2] Sheets 기록 + [Action 3] Slack 즉시 알림 (팀 채널)
+      ├─ 긴급 (urgency = "긴급")  → [Action 2] Sheets 기록 + [Action 3] Slack `#새-채널`(Public) 알림
       └─ 일반 (urgency = "일반")  → [Action 2] Sheets 기록만
 ```
 
@@ -55,12 +55,20 @@ FinFit 팀/제품에 들어오는 문의·피드백을 사람이 매번 읽고 "
 
 ## 5. 알림 채널
 
-**채택 (실동작):** Slack **공개 팀 채널** `새-채널` (`channelType = public`).  
-DM(`im`/slackbot)은 초기 검증용으로만 쓰고, 제출·실사용은 팀 채널로 둔다.  
-공개 Blueprint에는 채널 ID를 `***SLACK_TEAM_CHANNEL_ID***` 로 마스킹하고, Import 후 Make UI에서 `새-채널`을 다시 선택한다. (상세: [`../README.md`](../README.md) §7)
+**최종 채택·검증 (제출 기준):** Slack **공개(Public) 채널 `#새-채널`**.
 
-**대체안 (리스크 완화)**  
-Slack 권한이 없을 경우 → Gmail 알림, 또는 결과 시트「긴급 문의」탭만으로 대체.
+| 항목 | 값 | 근거 |
+|------|-----|------|
+| 채널 유형 | **Public** (`channelType = public`) | Make Blueprint · Slack UI 채널명 앞 **`#`** |
+| 채널 이름 | **`#새-채널`** | 실행 GIF 상단 헤더·본문 제목 |
+| 메시지 | Make 앱 → `[FinFit 긴급 문의]…` | 동일 GIF 타임라인 |
+| 증거 파일 | [`../gif/make_urgent_3_slack.gif`](../gif/make_urgent_3_slack.gif) | §7.1 ③ 임베드 |
+
+설계 단계에서는 “공개 **또는** 비공개 팀 채널”을 후보로 적었으나, **비공개(`private`)·DM(`im`)은 최종 미사용**.  
+공개 Blueprint의 채널 ID는 `***SLACK_TEAM_CHANNEL_ID***` 마스킹 → Import 후 Make에서 **Public · `새-채널`** 재선택. (상세: [`../README.md`](../README.md) §7)
+
+**대체안 (리스크 완화, 미사용)**  
+Slack 권한이 없을 경우 → Gmail 알림, 또는 결과 시트「긴급 문의」탭만.
 
 ## 6. 테스트 케이스 (분기별 1회 이상 실행 증거용)
 
@@ -88,9 +96,12 @@ GitHub·VS Code 등 Markdown 미리보기에서 아래 이미지를 클릭·재�
 
 ![긴급 · 에이전트 액션](../gif/make_urgent_2_action.gif)
 
-**③ Slack 팀 채널 알림** — 공개 채널 `새-채널` — `../gif/make_urgent_3_slack.gif`
+**③ Slack 알림 (최종 검증)** — **`#새-채널` · Public** · Make 앱 메시지 — `../gif/make_urgent_3_slack.gif`
 
-![긴급 · Slack 알림](../gif/make_urgent_3_slack.gif)
+> GIF에서 확인할 것: 상단 **`# 새-채널`**, 본문 제목 **`#새-채널`**, 발신 **Make 앱**, 본문 `[FinFit 긴급 문의]…`  
+> → 문서의 “공개 채널 `새-채널`” 표기와 **일치**. DM/비공개 화면 아님.
+
+![긴급 · Slack 알림 (#새-채널)](../gif/make_urgent_3_slack.gif)
 
 ### 7.2 일반 분기
 

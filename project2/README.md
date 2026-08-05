@@ -130,26 +130,31 @@ project2/
 
 ---
 
-## 7. Slack 팀 채널 (긴급 알림)
+## 7. Slack 채널 (긴급 알림) — GIF 교차검증
 
-실동작 Export 기준 모듈: **`slack:CreateMessage`** (긴급 분기 Action).  
-참고 Export: Make에서 받은  
-`FinFit 팀 문의 피드백 자동 분류 (project2).blueprint.json`  
-(로컬 Downloads 또는 동일 이름 정리본).
+실동작 모듈: **`slack:CreateMessage`** (긴급 Router 경로만).
 
-### 7.1 Blueprint에 적힌 설정 (제출·재현용 요약)
+### 7.0 교차검증 결론 (문서 ↔ GIF)
+
+| 구분 | 내용 |
+|------|------|
+| 설계 초안 후보 | 팀 채널을 **공개 또는 비공개** 중 고르는 방향 |
+| **최종 검증·제출** | **Public(공개) 채널 `#새-채널`** 만 사용 |
+| GIF에 보이는가? | **예.** `gif/make_urgent_3_slack.gif` 헤더·본문에 **`# 새-채널` / `#새-채널`**, 발신 **Make 앱**, 본문 `[FinFit 긴급 문의]…` |
+| 불일치였던 점 | `make/README`·Blueprint 라벨 등에 **「공개 또는 비공개」** 가 남아 최종 증거와 어긋남 → **본 절·GIF 기준으로 통일** |
+
+설계 문서 임베드: [`report/design.md`](./report/design.md) §5 · §7.1 ③
+
+### 7.1 Blueprint 설정 (제출·재현용 요약)
 
 | 항목 | 값 | 비고 |
 |------|-----|------|
-| 모듈 | `slack:CreateMessage` | 긴급 Router 경로만 |
-| Connection | Slack **bot** connection (`slack3`) | 워크스페이스 Make 연동 |
-| Channel type | **`public`** (`Public channel`) | DM(`im`) / slackbot **사용 안 함** |
-| 채널 선택 방식 | 목록에서 선택 (`channelWType: list`) | “Enter a channel ID or name” → Select from the list |
-| 채널 표시 이름 | **`새-채널`** | Make UI label |
-| 채널 ID (실값) | `C…` 형태 (예: Export에 `C0BM…`) | **공개 레포 Blueprint에는 넣지 않음** → `***SLACK_TEAM_CHANNEL_ID***` |
+| 모듈 | `slack:CreateMessage` | 긴급 경로만 |
+| Connection | Slack **bot** connection | 워크스페이스 Make 연동 |
+| Channel type | **`public`** (`Public channel`) | **private / im 미사용** |
+| 채널 이름 | **`#새-채널`** | GIF·Make label 동일 |
+| 채널 ID (실값) | `C…` (예: Export `C0BM…`) | 공개 레포는 `***SLACK_TEAM_CHANNEL_ID***` |
 | 메시지 | mrkdwn 템플릿 | 카테고리·요약·긴급도·원문·접수·연락처 |
-
-메시지 템플릿 (Blueprint `text`와 동일 구조):
 
 ```text
 *[FinFit 긴급 문의]* {{2.result.category}}
@@ -162,34 +167,33 @@ project2/
 
 ### 7.2 공개 Blueprint vs Make 실시나리오
 
-| 구분 | Slack `channel` 필드 |
-|------|----------------------|
-| **Git 공개본** (`make/…blueprint.json`, 정리 Export) | `***SLACK_TEAM_CHANNEL_ID***` (마스킹) |
-| **Make 실동작 시나리오** | 목록에서 **`새-채널`** 선택 (Public channel) |
+| 구분 | Slack `channel` |
+|------|-----------------|
+| **Git 공개본** | `***SLACK_TEAM_CHANNEL_ID***` (마스킹) · type=`public` |
+| **Make 실동작** | Public 목록에서 **`새-채널`** 선택 |
 
-Import 직후 `***SLACK_TEAM_CHANNEL_ID***` 가 그대로면 Slack이 `channel_not_found` 를 낸다.  
-**반드시 Make UI에서 `새-채널`을 다시 고른 뒤 Save** 한다.
+Import 직후 플레이스홀더 그대로면 `channel_not_found`.  
+**Public channel → `새-채널` 재선택** 후 Save.
 
 ### 7.3 Make에서 연결하는 절차
 
-1. 긴급 분기 **Slack – Create a Message** 모듈 열기  
-2. **Connection** = 기존 bot connection (동일 워크스페이스)  
-3. **Channel type** = `Public channel`  
-4. **Public channel** = 목록에서 **`새-채널`** 선택  
-5. 해당 채널에 Make 앱(봇)이 없으면 Slack에서 `/invite @Make`(또는 앱 이름)  
-6. **Text** 템플릿 유지 → Save → 긴급 테스트 1건 → `새-채널`에 메시지 확인  
+1. 긴급 분기 **Slack – Create a Message**  
+2. **Channel type** = `Public channel`  
+3. **Public channel** = **`새-채널`**  
+4. 채널에 Make 봇 `/invite`  
+5. Text 유지 → Save → 긴급 1건 → **`#새-채널`** 확인 (GIF와 동일 UI)
 
-| 쓰지 않음 | 쓰는 것 |
-|-----------|---------|
-| `Direct message` / `im` / DM ID (`D…`) | **Public** 팀 채널 · 이름 **`새-채널`** · ID `C…` |
-| 마스킹 문자열 `***SLACK_TEAM_CHANNEL_ID***` 그대로 실행 | Make 드롭다운에서 실 채널 선택 |
+| 쓰지 않음 | 최종 사용 |
+|-----------|-----------|
+| DM / `im` / Private channel | **Public · `#새-채널`** |
+| `***SLACK_TEAM_CHANNEL_ID***` 그대로 실행 | Make에서 실 채널 선택 |
 
 ### 7.4 실행 증거
 
-| 증거 | 경로 |
-|------|------|
-| Slack 수신 화면 | `gif/make_urgent_3_slack.gif` |
-| 긴급 시트 + 시나리오 | `gif/make_urgent_2_action.gif` |
+| 증거 | 경로 | GIF에서 확인 |
+|------|------|----------------|
+| Slack `#새-채널` + Make 메시지 | `gif/make_urgent_3_slack.gif` | 채널명·Make 앱·긴급 본문 |
+| 긴급 시트 + 시나리오 | `gif/make_urgent_2_action.gif` | Router 긴급 경로 |
 
 ---
 
