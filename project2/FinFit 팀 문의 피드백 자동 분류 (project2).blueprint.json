@@ -1098,12 +1098,12 @@
                       "label": "Search by path"
                     },
                     "sheetId": {
-                      "label": "고액 지출 분류 결과"
+                      "mode": "chose",
+                      "label": "긴급 문의"
                     },
                     "spreadsheetId": {
-                      "path": [
-                        "지출 자동 분류 결과"
-                      ]
+                      "mode": "chose",
+                      "label": "FinFit 문의 자동 분류 결과 — Import 후 본인 시트 선택"
                     },
                     "includesHeaders": {
                       "label": "Yes"
@@ -1634,12 +1634,12 @@
                       "label": "Search by path"
                     },
                     "sheetId": {
-                      "label": "고액 지출 분류 결과"
+                      "mode": "chose",
+                      "label": "일반 문의"
                     },
                     "spreadsheetId": {
-                      "path": [
-                        "지출 자동 분류 결과"
-                      ]
+                      "mode": "chose",
+                      "label": "FinFit 문의 자동 분류 결과 — Import 후 본인 시트 선택"
                     },
                     "includesHeaders": {
                       "label": "Yes"

@@ -86,7 +86,29 @@ def fix_runtime(j: dict) -> dict:
                 "4": "{{2.result.summary}}",
                 "5": "{{1.`2`}}",
             }
+            # Prefer filter name / sheetId over leftover project1 restore labels
+            filt_name = ((n.get("filter") or {}).get("name") or "")
+            sheet = mapper.get("sheetId") or ""
+            if "일반" in filt_name or sheet == "일반 문의":
+                tab_label = "일반 문의"
+                mapper["sheetId"] = "일반 문의"
+            else:
+                tab_label = "긴급 문의"
+                if sheet in ("", "고액 지출 분류 결과") or "긴급" in filt_name:
+                    mapper["sheetId"] = "긴급 문의"
             n["mapper"] = mapper
+            restore = n.setdefault("metadata", {}).setdefault("restore", {})
+            expect = restore.setdefault("expect", {})
+            expect["sheetId"] = {"mode": "chose", "label": tab_label}
+            if "spreadsheetId" in expect and isinstance(expect["spreadsheetId"], dict):
+                # drop project1 path labels like "지출 자동 분류 결과"
+                if expect["spreadsheetId"].get("path") or "지출" in str(
+                    expect["spreadsheetId"].get("label", "")
+                ):
+                    expect["spreadsheetId"] = {
+                        "mode": "chose",
+                        "label": "FinFit 문의 자동 분류 결과 — Import 후 본인 시트 선택",
+                    }
 
         if n.get("module") == "openai-gpt-3:CreateCompletion":
             mapper["response_format"] = "json_object"

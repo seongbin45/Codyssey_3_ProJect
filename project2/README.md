@@ -46,7 +46,7 @@ Codyssey 미션 **[프로젝트 2] 자유 주제 자동화 설계 및 구현**.
 | Action | OpenAI JSON 분류 → Sheets 기록 (+ 긴급 시 **Slack 팀 채널** 알림) |
 | 분기 | `urgency = 긴급` / `일반` (2-way) |
 | 긴급 알림 | Slack `Create a Message` → **Public channel** · 채널명 **`새-채널`** (아래 §7) |
-| 테스트 | 결제 장애(긴급) · 다크모드 요청(일반) — `report/design.md` §6 |
+| 테스트 | 설계 예시: 결제/다크모드 · **GIF 실증거: 긴급(탕비실 등)/일반(일상)** — `report/design.md` §6·§8 |
 
 ### 검토만 했던 후보 (미채택)
 

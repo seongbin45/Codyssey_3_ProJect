@@ -70,14 +70,42 @@ FinFit 팀/제품에 들어오는 문의·피드백을 사람이 매번 읽고 "
 **대체안 (리스크 완화, 미사용)**  
 Slack 권한이 없을 경우 → Gmail 알림, 또는 결과 시트「긴급 문의」탭만.
 
-## 6. 테스트 케이스 (분기별 1회 이상 실행 증거용)
+## 6. 테스트 케이스
 
-| # | 문의 내용 예시 | 기대 결과 | 실행 증거 GIF |
-|---|---|---|---|
-| 1 | "결제가 안 돼요, 지금 당장 필요해요" (또는 동등 긴급 문구) | urgency=긴급 → Sheets「긴급 문의」+ Slack | §7 긴급 3종 |
-| 2 | "다크모드 지원 언제 되나요?" (또는 동등 일반 문구) | urgency=일반 → Sheets「일반 문의」만 | §7 일반 2종 |
+### 6.1 설계용 예시 입력 (의도·프롬프트 검증용)
 
-파일 목록·명명 규칙 상세: [`../gif/README.md`](../gif/README.md)
+폼 설명·Apps Script 예시와 동일한 **권장 입력**이다. 구조 검증용 시나리오이며,  
+§6.2의 **제출 GIF에 찍힌 실제 문구와는 다를 수 있다.**
+
+| # | 문의 내용 예시 | 기대 결과 |
+|---|---|---|
+| A | "결제가 안 돼요, 지금 당장 필요해요" | urgency=긴급 → Sheets「긴급 문의」+ Slack `#새-채널` |
+| B | "다크모드 지원 언제 되나요?" | urgency=일반 → Sheets「일반 문의」만 |
+
+### 6.2 제출 GIF에 실제 기록된 케이스 (교차검증 기준)
+
+| 분기 | 결과 시트에 보이는 원본 문의 (요지) | urgency / category | 증거 GIF |
+|------|--------------------------------------|--------------------|----------|
+| 긴급 | 커피 수혈 요청 · **탕비실 응급(쓰러짐)** 등 | 긴급 / 기타 | §7.1 `make_urgent_*` |
+| 일반 | 피곤·수면·퇴근 등 **비즉시성** 문장 | 일반 / 기타 | §7.2 `make_normal_*` |
+
+- 긴급 Slack 본문(GIF): 탕비실 관련 긴급 문의 + Make 앱 → **`#새-채널`**  
+- 분기 동작(긴급=시트+Slack, 일반=시트만)은 설계 §3과 **일치**.  
+- 문서에 “결제/다크모드”만 적고 GIF 문구를 안 적으면 **구현 증거와 불일치**로 보이므로, 제출 기준은 **§6.2 + §7** 이다.
+
+파일 목록·명명: [`../gif/README.md`](../gif/README.md)
+
+### 6.3 구현 디테일 (Blueprint·실행 UI와 문서 정합)
+
+| 항목 | 실제 구현 | 비고 |
+|------|-----------|------|
+| Trigger | `google-forms:watchRows` · 탭 `Form Responses 1` | 한국어 UI면 `양식 응답 1` 가능 → 드롭다운 실명 선택 |
+| AI | OpenAI **`gpt-4.1`** · JSON `urgency/category/summary` | Make UI 모듈명에 Sora/Whisper 표기가 보여도 **Completion만 사용** |
+| Router | `urgency` 텍스트 equal `긴급` / `일반` | 2-way |
+| Sheets 탭 | **`긴급 문의`** / **`일반 문의`** | 프로젝트1「고액…」탭 이름 **미사용** |
+| Slack | **Public · `#새-채널`** | `make_urgent_3_slack.gif` |
+| 스케줄(데모) | Make 시나리오 **Every 15 minutes** (GIF 하단) | 폴링 주기 · ON 시 자동 실행 |
+| 결과 시트 헤더 | 타임스탬프·원본 문의·긴급도·카테고리·요약·연락처 | Apps Script와 동일 |
 
 ---
 
@@ -121,3 +149,19 @@ GitHub·VS Code 등 Markdown 미리보기에서 아래 이미지를 클릭·재�
 | 일반 | [make_normal_1_form.gif](../gif/make_normal_1_form.gif) | [make_normal_2_action.gif](../gif/make_normal_2_action.gif) | — |
 
 구현 화면: [Make_workflow_view.jpeg](../make/Make_workflow_view.jpeg) · 재현·Slack 설정: [`../README.md`](../README.md)
+
+---
+
+## 8. 구현 ↔ 문서 교차검증 요약 (깊은 점검)
+
+| 영역 | 일치? | 설명 |
+|------|:-----:|------|
+| 모듈 구성 (Forms→OpenAI→Router→Sheets×2+Slack) | ✅ | Blueprint · `Make_workflow_view.jpeg` · action GIF 캔버스 |
+| 2-way 분기 urgency 긴급/일반 | ✅ | filter + 결과 탭 분리 GIF |
+| Slack `#새-채널` Public | ✅ | `make_urgent_3_slack.gif` · Blueprint `channelType=public` |
+| 일반 경로 Slack 없음 | ✅ | normal action GIF는 시트「일반 문의」만 |
+| 폼 제목·필드 (문의 내용/연락처) | ✅ | form GIF · Apps Script |
+| 설계 예시 문구(결제/다크모드) vs GIF 실입력 | ⚠️→문서분리 | **§6.1 의도 / §6.2 실증거** 로 분리해 해소 |
+| Blueprint restore 라벨「고액 지출…」 | ⚠️→수정 | 프로젝트1 잔여 → **`긴급 문의`/`일반 문의`** 로 정리 |
+| make README「긴급+이메일」 | ⚠️→수정 | 실구현은 **Slack** (이메일 모듈 없음) |
+| 스케줄 15분 / 모델 gpt-4.1 | ⚠️→문서화 | GIF·Blueprint에 있음, 설계에 §6.3으로 명시 |
