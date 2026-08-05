@@ -47,8 +47,9 @@ FinFit 팀/제품에 들어오는 문의·피드백을 사람이 매번 읽고 "
 
 ## 5. 알림 채널
 
-**채택:** Slack **팀 채널** (공개 `public` 또는 비공개 `private`).  
-DM(`im`/slackbot)은 검증용으로만 쓰고, 제출·실사용은 팀 채널로 둔다.
+**채택 (실동작):** Slack **공개 팀 채널** `새-채널` (`channelType = public`).  
+DM(`im`/slackbot)은 초기 검증용으로만 쓰고, 제출·실사용은 팀 채널로 둔다.  
+공개 Blueprint에는 채널 ID를 `***SLACK_TEAM_CHANNEL_ID***` 로 마스킹하고, Import 후 Make UI에서 `새-채널`을 다시 선택한다. (상세: `README.md` §7)
 
 **대체안 (리스크 완화)**  
 Slack 권한이 없을 경우 → Gmail 알림, 또는 결과 시트「긴급 문의」탭만으로 대체.

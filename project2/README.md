@@ -5,12 +5,13 @@ Codyssey 미션 **[프로젝트 2] 자유 주제 자동화 설계 및 구현**.
 
 | 항목 | 내용 |
 |------|------|
-| 상태 | **주제 확정 — 팀 문의/피드백 자동 분류 (도구: Make)** |
+| 상태 | **제출본 완료** — 미션 프로젝트 2 필수 항목 충족 (문서 교차검증 반영) |
 | 선정 주제 | FinFit 팀 문의·피드백 긴급도/카테고리 자동 분류 |
 | 도구 | **Make.com** (클라우드 상시 구동 · 프로젝트1 계정 재사용) |
 | 설계 문서 | `design.md` |
 | 공통 구조 | Trigger 1+ · Action 2+ · 조건 분기 1+ · **각 분기 1회 이상 실행 증거** |
-| 자동 실행 | Trigger 발생 시 **자동** 실행 (설계 문서만 제출 불가) |
+| 자동 실행 | Trigger(폼 응답) 발생 시 시나리오 ON이면 **자동** 실행 (설계 문서만 제출 불가) |
+| 보너스1 | ✅ OpenAI JSON 분류 · 보너스2(실패 알림)는 선택·미구현 |
 
 ---
 
@@ -21,9 +22,9 @@ Codyssey 미션 **[프로젝트 2] 자유 주제 자동화 설계 및 구현**.
 | 1 | 자동화할 **반복 업무 1개** 정의 | ✅ 문의/피드백 긴급 분류 (`design.md` §1) |
 | 2 | **도구 1개** 선정 + 선정 이유 | ✅ Make — 상시 클라우드 (`design.md` §2) |
 | 3 | 워크플로우 **설계 문서** (설명 또는 다이어그램) | ✅ `design.md` |
-| 4 | **구현 화면** 캡처 | 🔄 `make/Make_workflow_view.jpeg` · `screen.png` (있으면 사용) |
+| 4 | **구현 화면** 캡처 | ✅ `make/Make_workflow_view.jpeg` (주 제출) · `screen.png` (보조) |
 | 5 | **실행 결과** 캡처 (분기별 1회 이상) | ✅ `gif/` — 긴급 form/action/slack + 일반 form/action (5 GIF) |
-| 6 | 실제 동작 워크플로우 (Export/Blueprint 등) | ✅ LOCAL Blueprint 실동작 확인 · 공개용은 마스킹본 |
+| 6 | 실제 동작 워크플로우 (Export/Blueprint 등) | ✅ 공개 마스킹 Blueprint + LOCAL 실동작 확인 |
 
 ### 공통 기능 요구 (프로젝트 1과 동일 코어)
 
@@ -110,16 +111,19 @@ project2/
 
 ---
 
-## 6. 다음 액션
+## 6. 구현·검증 완료 목록
 
 1. [x] 주제·도구 확정 + `design.md`  
 2. [x] Make Import용 Blueprint — `make/…LOCAL.blueprint.json` **실동작 확인** (공개본은 마스킹)  
 3. [x] Google 문의 폼 + 결과 시트 탭「긴급 문의」「일반 문의」  
 4. [x] Make 연결 재매핑 (Google / OpenAI / Slack)  
-5. [x] **긴급 분기** 테스트 — Slack 메시지 전송 성공 (예: 커피 수혈 요청)  
-6. [x] **일반 분기** 실행 + GIF 정리 (`gif/make_normal_*.gif`)  
-7. [x] 실행 증명 GIF 5종 — `gif/README.md` 참고 (원본 여백 crop 후 변환)  
-8. [x] Slack **팀 공개 채널** `새-채널` 연결 (Blueprint: `channelType=public`, DM 아님) — §7
+5. [x] **긴급 분기** 테스트 — Slack 메시지 전송 성공  
+6. [x] **일반 분기** 실행 + GIF (`gif/make_normal_*.gif`)  
+7. [x] 실행 증명 GIF 5종 — `gif/README.md` (녹화 여백 crop 후 변환)  
+8. [x] Slack **팀 공개 채널** `새-채널` (`channelType=public`, DM 아님) — §7  
+9. [x] 미션 기준 교차검증 — 필수 항목 충족 · 루트 README 상태와 동기화  
+
+**재현 시 주의:** 공개 Blueprint Import 후 Slack·시트 ID는 Make UI에서 본인 리소스로 다시 고른다 (`***…***` 플레이스홀더 그대로 실행 금지).
 
 ---
 

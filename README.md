@@ -7,7 +7,7 @@
 |------|------|
 | 커리큘럼 | Codyssey · AI 도구 학습 · **노코드 자동화 기초** |
 | 미션 원문 | [`미션.txt`](./미션.txt) |
-| 저장소 상태 | **프로젝트 1 = 제출본 완료** · **프로젝트 2 = 구현·검증 진행 중** |
+| 저장소 상태 | **프로젝트 1 = 제출본 완료** · **프로젝트 2 = 제출본 완료** |
 | 원격 | `origin/main`에 커밋·푸시하며 관리 |
 
 ---
@@ -31,26 +31,40 @@
 
 Zapier Free는 “단계 수 제한” 때문에 이 구조를 못 만들어서 **채택하지 않았습니다.**
 
-### 프로젝트 2 (진행 중)
+### 프로젝트 2 (완료)
 
 **FinFit 팀 문의/피드백**을 폼으로 받으면 AI가 **긴급/일반**을 나누고,  
-긴급만 **Slack 팀 채널**로 알리고, 둘 다 시트에 남기는 자동화입니다. (도구: **Make**)
+긴급만 **Slack 팀 공개 채널(`새-채널`)** 로 알리고, 둘 다 시트에 남기는 자동화입니다. (도구: **Make** 1개)
 
-→ 자세한 설계·Blueprint: [`project2/README.md`](./project2/README.md)
+| 구분 | 내용 |
+|------|------|
+| Trigger | Google Forms 응답 시트 폴링 |
+| 분기 | `urgency` = 긴급 / 일반 (Router 2-way) |
+| Action | OpenAI 분류 · Sheets 기록 · (긴급) Slack 메시지 |
+| 증거 | [`project2/gif/`](./project2/gif/) · 구현 화면 [`project2/make/Make_workflow_view.jpeg`](./project2/make/Make_workflow_view.jpeg) |
+
+→ 설계·체크리스트·Slack 재매핑: [`project2/README.md`](./project2/README.md)
 
 ---
 
 ## 2. 이 README를 읽는 순서 (처음 온 사람용)
 
 ```text
-① 이 문서 1~4절          → 무엇을 했는지·흐름이 뭔지
+① 이 문서 1~4절 · §8     → 무엇을 했는지·산출물 위치
 ② project1/report/프로젝트1_…보고서.md → 비교·장단점·증거(GIF) 제출 본문
 ③ project1/make/ · project1/n8n/ README    → 도구별로 파일이 뭐가 있는지
 ④ project1/gif/ · project1/n8n/n8n_png/    → 화면 녹화·설치 마찰 이미지
-⑤ project2/             → 자유 주제 (별개 과제)
+⑤ project2/README · design · gif · make    → 자유 주제 (별개 과제, 제출 완료)
 ```
 
-**채점·리뷰만 할 때:** `project1/report/프로젝트1_자동화_도구_비교_분석_보고서.md` 와 `project1/gif/` 를 보면 됩니다. (폼을 다시 만들 필요 없음)
+**채점·리뷰만 할 때**
+
+| 프로젝트 | 먼저 볼 것 |
+|----------|------------|
+| 1 | `project1/report/프로젝트1_자동화_도구_비교_분석_보고서.md` + `project1/gif/` |
+| 2 | `project2/design.md` + `project2/gif/` + `project2/make/Make_workflow_view.jpeg` |
+
+(폼을 다시 만들 필요 없음)
 
 **본인 계정으로 시나리오를 다시 돌릴 때:**  
 반드시 **폼·시트 생성(§6.2) → Make/n8n Import·연결(§6.3~6.4)** 순서.  
@@ -283,10 +297,14 @@ GIF·스크린샷에도 가능하면 이메일·전체 시트 ID를 가립니다
 
 | 산출물 | 상태 | 위치 |
 |--------|------|------|
-| 업무 정의·설계 | ✅ | `project2/design.md` |
-| Make Blueprint | ✅ (LOCAL 실동작) | `project2/make/` |
-| 긴급→Slack 팀 채널 | 설정·검증 중 | `project2/README.md` |
-| 제출용 캡처 세트 | 진행 | — |
+| 업무 정의·도구 선정 이유 | ✅ | `project2/design.md` §1–2 |
+| 워크플로우 설계(다이어그램) | ✅ | `project2/design.md` §3 |
+| Make Blueprint (마스킹) | ✅ | `project2/make/*.blueprint.json` · 루트 Export 정리본 |
+| 구현 화면 | ✅ | `project2/make/Make_workflow_view.jpeg` |
+| 실행 결과 (분기별) | ✅ | `project2/gif/` (긴급 3 + 일반 2) |
+| 긴급→Slack 팀 채널 | ✅ Public **`새-채널`** | `project2/README.md` §7 |
+| 보너스1 AI 연동 | ✅ OpenAI JSON 분류 | Blueprint 모듈 2 |
+| 보너스2 실패 알림 | 선택·미구현 | — |
 
 ---
 
@@ -328,7 +346,9 @@ A. 그 폴더만 열어도 “이게 뭔 파일인지” 알 수 있게 하기 �
 | [`project1/report/프로젝트1_자동화_도구_비교_분석_보고서.md`](./project1/report/프로젝트1_자동화_도구_비교_분석_보고서.md) | 비교 표, 장단점, GIF 증거 |
 | [`project1/n8n/README.md`](./project1/n8n/README.md) | n8n 실행·Import·경고 로그 해석 |
 | [`project1/make/README.md`](./project1/make/README.md) | Make Blueprint Import |
-| [`project2/README.md`](./project2/README.md) | 프로젝트2 현황 |
+| [`project2/README.md`](./project2/README.md) | 프로젝트2 체크리스트·Slack·재현 주의 |
+| [`project2/design.md`](./project2/design.md) | 프로젝트2 업무·흐름·테스트 케이스 |
+| [`project2/gif/README.md`](./project2/gif/README.md) | 프로젝트2 실행 GIF 목록 |
 | [`other/README.md`](./other/README.md) | 도구 사전 조사 |
 
 ---
