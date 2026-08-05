@@ -1,4 +1,6 @@
-# project2/design.md — 팀 문의/피드백 자동 분류 파이프라인
+# project2/report/design.md — 팀 문의/피드백 자동 분류 파이프라인
+
+GitHub에서 이 문서를 열면 **구현 화면(§3.1)** 과 **실행 GIF(§7)** 를 바로 볼 수 있다.
 
 ## 1. 반복 업무 정의
 
@@ -37,9 +39,9 @@ FinFit 팀/제품에 들어오는 문의·피드백을 사람이 매번 읽고 "
 
 ### 3.1 구현 화면 (Make 캔버스)
 
-시나리오 전체 구성 화면. (파일: `make/Make_workflow_view.jpeg`)
+시나리오 전체 구성 화면. (파일: `../make/Make_workflow_view.jpeg`)
 
-![Make 구현 화면 — FinFit 문의 자동 분류](./make/Make_workflow_view.jpeg)
+![Make 구현 화면 — FinFit 문의 자동 분류](../make/Make_workflow_view.jpeg)
 
 ## 4. 필드 스키마 (OpenAI 응답)
 
@@ -55,7 +57,7 @@ FinFit 팀/제품에 들어오는 문의·피드백을 사람이 매번 읽고 "
 
 **채택 (실동작):** Slack **공개 팀 채널** `새-채널` (`channelType = public`).  
 DM(`im`/slackbot)은 초기 검증용으로만 쓰고, 제출·실사용은 팀 채널로 둔다.  
-공개 Blueprint에는 채널 ID를 `***SLACK_TEAM_CHANNEL_ID***` 로 마스킹하고, Import 후 Make UI에서 `새-채널`을 다시 선택한다. (상세: `README.md` §7)
+공개 Blueprint에는 채널 ID를 `***SLACK_TEAM_CHANNEL_ID***` 로 마스킹하고, Import 후 Make UI에서 `새-채널`을 다시 선택한다. (상세: [`../README.md`](../README.md) §7)
 
 **대체안 (리스크 완화)**  
 Slack 권한이 없을 경우 → Gmail 알림, 또는 결과 시트「긴급 문의」탭만으로 대체.
@@ -67,44 +69,44 @@ Slack 권한이 없을 경우 → Gmail 알림, 또는 결과 시트「긴급 �
 | 1 | "결제가 안 돼요, 지금 당장 필요해요" (또는 동등 긴급 문구) | urgency=긴급 → Sheets「긴급 문의」+ Slack | §7 긴급 3종 |
 | 2 | "다크모드 지원 언제 되나요?" (또는 동등 일반 문구) | urgency=일반 → Sheets「일반 문의」만 | §7 일반 2종 |
 
-파일 목록·명명 규칙 상세: [`gif/README.md`](./gif/README.md)
+파일 목록·명명 규칙 상세: [`../gif/README.md`](../gif/README.md)
 
 ---
 
 ## 7. 실행 결과 화면 (GIF — 설계 문서에서 바로 보기)
 
 GitHub·VS Code 등 Markdown 미리보기에서 아래 이미지를 클릭·재생할 수 있다.  
-원본 경로: `gif/make_*.gif` (프로젝트1 보고서와 동일한 **문서 임베드** 방식).
+원본 경로: `../gif/make_*.gif` (프로젝트1 보고서와 동일한 **문서 임베드** 방식).
 
 ### 7.1 긴급 분기
 
-**① 폼 제출** — `gif/make_urgent_1_form.gif`
+**① 폼 제출** — `../gif/make_urgent_1_form.gif`
 
-![긴급 · 폼 양식 응답](./gif/make_urgent_1_form.gif)
+![긴급 · 폼 양식 응답](../gif/make_urgent_1_form.gif)
 
-**② Make 액션** — 시나리오 실행 → 「긴급 문의」탭 — `gif/make_urgent_2_action.gif`
+**② Make 액션** — 시나리오 실행 → 「긴급 문의」탭 — `../gif/make_urgent_2_action.gif`
 
-![긴급 · 에이전트 액션](./gif/make_urgent_2_action.gif)
+![긴급 · 에이전트 액션](../gif/make_urgent_2_action.gif)
 
-**③ Slack 팀 채널 알림** — 공개 채널 `새-채널` — `gif/make_urgent_3_slack.gif`
+**③ Slack 팀 채널 알림** — 공개 채널 `새-채널` — `../gif/make_urgent_3_slack.gif`
 
-![긴급 · Slack 알림](./gif/make_urgent_3_slack.gif)
+![긴급 · Slack 알림](../gif/make_urgent_3_slack.gif)
 
 ### 7.2 일반 분기
 
-**① 폼 제출** — `gif/make_normal_1_form.gif`
+**① 폼 제출** — `../gif/make_normal_1_form.gif`
 
-![일반 · 폼 양식 응답](./gif/make_normal_1_form.gif)
+![일반 · 폼 양식 응답](../gif/make_normal_1_form.gif)
 
-**② Make 액션** — 「일반 문의」탭만 (Slack 없음) — `gif/make_normal_2_action.gif`
+**② Make 액션** — 「일반 문의」탭만 (Slack 없음) — `../gif/make_normal_2_action.gif`
 
-![일반 · 에이전트 액션](./gif/make_normal_2_action.gif)
+![일반 · 에이전트 액션](../gif/make_normal_2_action.gif)
 
 ### 7.3 증거 한눈에
 
 | 분기 | form | action | 추가 |
 |------|------|--------|------|
-| 긴급 | [make_urgent_1_form.gif](./gif/make_urgent_1_form.gif) | [make_urgent_2_action.gif](./gif/make_urgent_2_action.gif) | [make_urgent_3_slack.gif](./gif/make_urgent_3_slack.gif) |
-| 일반 | [make_normal_1_form.gif](./gif/make_normal_1_form.gif) | [make_normal_2_action.gif](./gif/make_normal_2_action.gif) | — |
+| 긴급 | [make_urgent_1_form.gif](../gif/make_urgent_1_form.gif) | [make_urgent_2_action.gif](../gif/make_urgent_2_action.gif) | [make_urgent_3_slack.gif](../gif/make_urgent_3_slack.gif) |
+| 일반 | [make_normal_1_form.gif](../gif/make_normal_1_form.gif) | [make_normal_2_action.gif](../gif/make_normal_2_action.gif) | — |
 
-구현 화면: [Make_workflow_view.jpeg](./make/Make_workflow_view.jpeg) · 재현·Slack 설정: [`README.md`](./README.md)
+구현 화면: [Make_workflow_view.jpeg](../make/Make_workflow_view.jpeg) · 재현·Slack 설정: [`../README.md`](../README.md)

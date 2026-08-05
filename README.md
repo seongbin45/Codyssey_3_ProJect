@@ -62,7 +62,7 @@ Zapier Free는 “단계 수 제한” 때문에 이 구조를 못 만들어서 
 | 프로젝트 | 먼저 볼 것 |
 |----------|------------|
 | 1 | `project1/report/프로젝트1_자동화_도구_비교_분석_보고서.md` + `project1/gif/` |
-| 2 | **`project2/design.md` 한 장** (§3.1 구현 화면 · §7 실행 GIF 임베드) · 원본은 `gif/` · `make/` |
+| 2 | **[`project2/report/design.md`](./project2/report/design.md)** 한 장 (§3.1 구현 화면 · §7 실행 GIF) · 원본 `gif/` · `make/` |
 
 (폼을 다시 만들 필요 없음)
 
@@ -297,8 +297,8 @@ GIF·스크린샷에도 가능하면 이메일·전체 시트 ID를 가립니다
 
 | 산출물 | 상태 | 위치 |
 |--------|------|------|
-| 업무 정의·도구 선정 이유 | ✅ | `project2/design.md` §1–2 |
-| 워크플로우 설계(다이어그램) | ✅ | `project2/design.md` §3 |
+| 업무 정의·도구 선정 이유 | ✅ | `project2/report/design.md` §1–2 |
+| 워크플로우 설계(다이어그램) | ✅ | `project2/report/design.md` §3 |
 | Make Blueprint (마스킹) | ✅ | `project2/make/*.blueprint.json` · 루트 Export 정리본 |
 | 구현 화면 | ✅ | `project2/make/Make_workflow_view.jpeg` |
 | 실행 결과 (분기별) | ✅ | `project2/gif/` (긴급 3 + 일반 2) |
@@ -347,7 +347,7 @@ A. 그 폴더만 열어도 “이게 뭔 파일인지” 알 수 있게 하기 �
 | [`project1/n8n/README.md`](./project1/n8n/README.md) | n8n 실행·Import·경고 로그 해석 |
 | [`project1/make/README.md`](./project1/make/README.md) | Make Blueprint Import |
 | [`project2/README.md`](./project2/README.md) | 프로젝트2 체크리스트·Slack·재현 주의 |
-| [`project2/design.md`](./project2/design.md) | 프로젝트2 업무·흐름·테스트 케이스 |
+| [`project2/report/design.md`](./project2/report/design.md) | 프로젝트2 설계 + 구현 화면·실행 GIF (GitHub) |
 | [`project2/gif/README.md`](./project2/gif/README.md) | 프로젝트2 실행 GIF 목록 |
 | [`other/README.md`](./other/README.md) | 도구 사전 조사 |
 

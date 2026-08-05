@@ -8,7 +8,7 @@ Codyssey 미션 **[프로젝트 2] 자유 주제 자동화 설계 및 구현**.
 | 상태 | **제출본 완료** — 미션 프로젝트 2 필수 항목 충족 (문서 교차검증 반영) |
 | 선정 주제 | FinFit 팀 문의·피드백 긴급도/카테고리 자동 분류 |
 | 도구 | **Make.com** (클라우드 상시 구동 · 프로젝트1 계정 재사용) |
-| 설계 문서 | `design.md` |
+| 설계 문서 | [`report/design.md`](./report/design.md) (GitHub에서 GIF·캡처 열람) |
 | 공통 구조 | Trigger 1+ · Action 2+ · 조건 분기 1+ · **각 분기 1회 이상 실행 증거** |
 | 자동 실행 | Trigger(폼 응답) 발생 시 시나리오 ON이면 **자동** 실행 (설계 문서만 제출 불가) |
 | 보너스1 | ✅ OpenAI JSON 분류 · 보너스2(실패 알림)는 선택·미구현 |
@@ -19,11 +19,11 @@ Codyssey 미션 **[프로젝트 2] 자유 주제 자동화 설계 및 구현**.
 
 | # | 요구 | 상태 |
 |---|------|------|
-| 1 | 자동화할 **반복 업무 1개** 정의 | ✅ 문의/피드백 긴급 분류 (`design.md` §1) |
-| 2 | **도구 1개** 선정 + 선정 이유 | ✅ Make — 상시 클라우드 (`design.md` §2) |
-| 3 | 워크플로우 **설계 문서** (설명 또는 다이어그램) | ✅ `design.md` (§3 흐름 · **§3.1·§7에 캡처/GIF 임베드**) |
-| 4 | **구현 화면** 캡처 | ✅ `make/Make_workflow_view.jpeg` — **`design.md` §3.1에서 열람** |
-| 5 | **실행 결과** 캡처 (분기별 1회 이상) | ✅ `gif/` 5종 — **`design.md` §7에서 열람** |
+| 1 | 자동화할 **반복 업무 1개** 정의 | ✅ 문의/피드백 긴급 분류 (`report/design.md` §1) |
+| 2 | **도구 1개** 선정 + 선정 이유 | ✅ Make — 상시 클라우드 (`report/design.md` §2) |
+| 3 | 워크플로우 **설계 문서** (설명 또는 다이어그램) | ✅ [`report/design.md`](./report/design.md) (§3 · **§3.1·§7 캡처/GIF 임베드**) |
+| 4 | **구현 화면** 캡처 | ✅ `make/Make_workflow_view.jpeg` — **`report/design.md` §3.1** |
+| 5 | **실행 결과** 캡처 (분기별 1회 이상) | ✅ `gif/` 5종 — **`report/design.md` §7** |
 | 6 | 실제 동작 워크플로우 (Export/Blueprint 등) | ✅ 공개 마스킹 Blueprint + LOCAL 실동작 확인 |
 
 ### 공통 기능 요구 (프로젝트 1과 동일 코어)
@@ -38,7 +38,7 @@ Codyssey 미션 **[프로젝트 2] 자유 주제 자동화 설계 및 구현**.
 
 ## 2. 선정 주제 (확정)
 
-**팀 문의/피드백 자동 분류** · 도구 **Make.com** · 상세는 `design.md`.
+**팀 문의/피드백 자동 분류** · 도구 **Make.com** · 상세는 [`report/design.md`](./report/design.md).
 
 | 단계 | 내용 |
 |------|------|
@@ -46,7 +46,7 @@ Codyssey 미션 **[프로젝트 2] 자유 주제 자동화 설계 및 구현**.
 | Action | OpenAI JSON 분류 → Sheets 기록 (+ 긴급 시 **Slack 팀 채널** 알림) |
 | 분기 | `urgency = 긴급` / `일반` (2-way) |
 | 긴급 알림 | Slack `Create a Message` → **Public channel** · 채널명 **`새-채널`** (아래 §7) |
-| 테스트 | 결제 장애(긴급) · 다크모드 요청(일반) — `design.md` §6 |
+| 테스트 | 결제 장애(긴급) · 다크모드 요청(일반) — `report/design.md` §6 |
 
 ### 검토만 했던 후보 (미채택)
 
@@ -76,7 +76,9 @@ Codyssey 미션 **[프로젝트 2] 자유 주제 자동화 설계 및 구현**.
 ```text
 project2/
 ├── README.md              # 본 문서 (주제·체크리스트·규칙·Slack 채널)
-├── design.md              # 워크플로우 설계 (확정 초안)
+├── report/
+│   ├── README.md
+│   └── design.md          # 설계 + 구현 화면·GIF 임베드 (GitHub 열람용)
 ├── make/                  # Make Blueprint·캡처
 ├── gif/                   # 실행 증명 GIF (5)
 ├── create_google_form_Project_2.js
@@ -88,7 +90,8 @@ project2/
 | 파일 | 설명 |
 |------|------|
 | `README.md` | 진행 상태·체크리스트·규칙·**Slack 팀 채널** |
-| `design.md` | 업무 정의, Make 선정 이유, 2-way 구조, JSON 스키마, 테스트 케이스 |
+| **`report/design.md`** | 설계 본문 + **구현 화면·실행 GIF 임베드** (제출·채점 주 문서) |
+| `report/README.md` | report 폴더 안내 |
 | `make/FinFit_inquiry_auto_triage.blueprint.json` | Make Import용 (시트·Slack ID **마스킹**) |
 | `FinFit 팀 문의 피드백 자동 분류 (project2).blueprint.json` | Make Export 정리본 (공개 마스킹 · Slack 본문 템플릿 포함) |
 | `make/README.md` | Import 절차·시트 헤더·재매핑 안내 |
@@ -113,7 +116,7 @@ project2/
 
 ## 6. 구현·검증 완료 목록
 
-1. [x] 주제·도구 확정 + `design.md`  
+1. [x] 주제·도구 확정 + `report/design.md`  
 2. [x] Make Import용 Blueprint — `make/…LOCAL.blueprint.json` **실동작 확인** (공개본은 마스킹)  
 3. [x] Google 문의 폼 + 결과 시트 탭「긴급 문의」「일반 문의」  
 4. [x] Make 연결 재매핑 (Google / OpenAI / Slack)  

@@ -31,8 +31,8 @@ FinFit 팀 문의/피드백 자동 분류 시나리오의 **폼 제출 + 실행 
 | `make_normal_1_form.gif` | 일반 문의 폼 작성·제출 | 응답 시트에 행 추가 |
 | `make_normal_2_action.gif` | Make 실행 → 일반 경로 | 「일반 문의」탭만 · Slack 없음 |
 
-> **설계 문서에서 보기:** 위 GIF는 [`../design.md`](../design.md) **§7** 에 Markdown으로 임베드되어 있다.  
-> 채점·리뷰 시 `design.md` 만 열면 구현 화면(§3.1) + 실행 GIF(§7)를 한 문서에서 확인할 수 있다.
+> **설계 문서에서 보기:** 위 GIF는 [`../report/design.md`](../report/design.md) **§7** 에 Markdown으로 임베드되어 있다.  
+> 채점·리뷰 시 GitHub에서 `report/design.md` 만 열면 구현 화면(§3.1) + 실행 GIF(§7)를 한 문서에서 확인할 수 있다.
 
 ## 변환 메모
 
@@ -44,7 +44,7 @@ FinFit 팀 문의/피드백 자동 분류 시나리오의 **폼 제출 + 실행 
 
 | 경로 | 설명 |
 |------|------|
-| `../design.md` | 분기·테스트 케이스 |
+| [`../report/design.md`](../report/design.md) | 설계 + GIF 임베드 (GitHub 열람) |
 | `../README.md` | 프로젝트 2 체크리스트 |
 | `../make/` | Blueprint · Import 안내 |
 | `../../project1/gif/` | 프로젝트 1 GIF 명명 참고 |

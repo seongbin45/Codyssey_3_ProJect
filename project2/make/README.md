@@ -1,7 +1,7 @@
 # project2/make/ — Make.com 산출물 (프로젝트 2)
 
 **주제:** FinFit 팀 문의/피드백 자동 분류  
-**도구:** Make.com · 설계: `../design.md`
+**도구:** Make.com · 설계: [`../report/design.md`](../report/design.md)
 
 ## 파일 목록
 
@@ -133,7 +133,7 @@ ID를 직접 붙여넣었다면 앞뒤 공백·슬래시를 제거한다.
 **Run once 팁**  
 Trigger가 “새 행”만 볼 때는 폼을 **한 건 제출한 뒤** Run once 하거나, Watch 모듈에서 기존 행을 수동 매핑한다.
 
-## 테스트 (design.md §6)
+## 테스트 (report/design.md §6)
 
 | 입력 (문의 내용) | 기대 |
 |------------------|------|
@@ -150,6 +150,6 @@ Trigger가 “새 행”만 볼 때는 폼을 **한 건 제출한 뒤** Run once
 
 | 경로 | 설명 |
 |------|------|
-| `../design.md` | 업무·선정 이유·스키마 |
+| [`../report/design.md`](../report/design.md) | 업무·선정 이유·스키마·실행 GIF |
 | `../README.md` | 프로젝트2 진행 체크리스트 |
 | `../../make/` | 프로젝트1 Make Blueprint (참고 원본) |
